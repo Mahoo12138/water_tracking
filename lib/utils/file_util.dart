@@ -121,8 +121,8 @@ class FileUtil {
         file.writeContent(outputStream);
       }
     }
-    //复制数据库
-    await Utils().isarUtil.dataMigration(_cachePath);
+    // //复制数据库
+    // await Utils().isarUtil.dataMigration(_cachePath);
   }
 
   String getRealPath(String fileType, String fileName) {

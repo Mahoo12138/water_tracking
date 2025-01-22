@@ -1,10 +1,8 @@
 
-import 'data/isar.dart';
 import 'data/pref.dart';
 import 'file_util.dart';
 import 'theme_util.dart';
 import 'log_util.dart';
-import 'notice_util.dart';
 import 'package_util.dart';
 
 class Utils {
@@ -23,8 +21,4 @@ class Utils {
   late final PrefUtil prefUtil = PrefUtil();
   late final PackageUtil packageUtil = PackageUtil();
   late final ThemeUtil themeUtil = ThemeUtil();
-  late final IsarUtil isarUtil = IsarUtil();
-  late final NoticeUtil noticeUtil = NoticeUtil();
-
-
 }
