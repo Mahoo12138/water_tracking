@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
-import 'package:water_tracking/common/values/colors.dart';
+import 'package:water_tracking/common/constants/colors.dart';
 import 'package:water_tracking/utils/utils.dart';
 
 class ThemeUtil {

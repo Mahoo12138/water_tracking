@@ -1,4 +1,3 @@
-import 'package:hive/hive.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:flutter/material.dart';
 
@@ -27,7 +26,7 @@ class ThemeLogic extends Notifier<ThemeUiModel> {
   }
 
   void setThemeMode(ThemeMode mode) {
-    Hive.box<String>('prefs').put('themeMode', mode.toString());
+    // Hive.box<String>('prefs').put('themeMode', mode.toString());
     state = state.copyWith(themeMode: mode);
   }
 

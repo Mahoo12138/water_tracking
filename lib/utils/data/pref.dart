@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:water_tracking/common/values/view_mode.dart';
+import 'package:water_tracking/common/constants/view_mode.dart';
 import 'package:water_tracking/utils/utils.dart';
 
 class PrefUtil {
