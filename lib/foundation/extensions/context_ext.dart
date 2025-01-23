@@ -13,4 +13,8 @@ extension ContextExt on BuildContext {
       return key;
     }
   }
+
+  Color getColor(String colorName) {
+    return Theme.of(this).extension()?.colors[colorName] ?? Colors.red;
+  }
 }

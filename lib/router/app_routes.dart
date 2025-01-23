@@ -4,13 +4,14 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod/riverpod.dart';
 
 import 'package:water_tracking/pages/home/home_view.dart';
-import 'package:water_tracking/pages/start/start_view.dart';
+import 'package:water_tracking/pages/onboarding/view.dart';
+import 'package:water_tracking/pages/start/view.dart';
 
 import 'package:water_tracking/router/fade_extension.dart';
 
 enum AppRoute {
   firstScreen,
-  secondScreen,
+  onboarding,
   home,
   login,
   register,
@@ -38,6 +39,11 @@ class AppRouter extends Notifier<GoRouter> {
           path: AppRoute.home.route,
           builder: (BuildContext context, GoRouterState state) =>
               const HomePage(),
+        ).fade(),
+        GoRoute(
+          path: AppRoute.onboarding.route,
+          builder: (BuildContext context, GoRouterState state) =>
+              const OnBoardingPage(),
         ).fade(),
       ],
     );

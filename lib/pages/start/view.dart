@@ -86,7 +86,9 @@ class StartPage extends StatelessWidget {
                   FilledButton(
                       onPressed: () {
                         // logic.toHome();
-                        context.go(AppRoute.home.route);
+                        // context.go(AppRoute.home.route);
+                        context.go(AppRoute.onboarding.route);
+
                       },
                       child: Text(context.tr("startChoice2"))),
                 ],
