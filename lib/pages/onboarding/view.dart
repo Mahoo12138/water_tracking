@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:water_tracking/common/widgets/Button.dart';
 import 'package:water_tracking/common/widgets/LinearGradientFadedEdges.dart';
 import 'package:water_tracking/common/widgets/LowKeyButton.dart';
@@ -11,6 +12,7 @@ import 'package:water_tracking/foundation/extensions/context_ext.dart';
 // import 'package:budget/database/initializeDefaultDatabase.dart';
 
 import 'package:water_tracking/foundation/extensions/datetime_ext.dart';
+import 'package:water_tracking/router/app_routes.dart';
 import 'package:water_tracking/utils/platform.dart';
 
 class OnBoardingPage extends StatelessWidget {
@@ -444,6 +446,7 @@ class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
               ? SizedBox.shrink()
               : SettingsContainerOutlined(
                   onTap: () async {
+                    context.go(AppRoute.home.route);
                     // loadingIndeterminateKey.currentState?.setVisibility(true);
                     // openLoadingPopupTryCatch(
                     //   () async {

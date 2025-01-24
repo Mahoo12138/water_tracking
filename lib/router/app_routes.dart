@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:riverpod/riverpod.dart';
 
-import 'package:water_tracking/pages/home/home_view.dart';
+import 'package:water_tracking/pages/home/view.dart';
 import 'package:water_tracking/pages/onboarding/view.dart';
 import 'package:water_tracking/pages/start/view.dart';
 
