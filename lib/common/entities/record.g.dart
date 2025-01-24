@@ -31,6 +31,26 @@ const RecordSchema = CollectionSchema(
       id: 2,
       name: r'updateAt',
       type: IsarType.dateTime,
+    ),
+    r'vesselCapacityML': PropertySchema(
+      id: 3,
+      name: r'vesselCapacityML',
+      type: IsarType.long,
+    ),
+    r'vesselColor': PropertySchema(
+      id: 4,
+      name: r'vesselColor',
+      type: IsarType.string,
+    ),
+    r'vesselIcon': PropertySchema(
+      id: 5,
+      name: r'vesselIcon',
+      type: IsarType.string,
+    ),
+    r'vesselName': PropertySchema(
+      id: 6,
+      name: r'vesselName',
+      type: IsarType.string,
     )
   },
   estimateSize: _recordEstimateSize,
@@ -53,6 +73,24 @@ int _recordEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  {
+    final value = object.vesselColor;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.vesselIcon;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.vesselName;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -65,6 +103,10 @@ void _recordSerialize(
   writer.writeLong(offsets[0], object.amountML);
   writer.writeDateTime(offsets[1], object.createAt);
   writer.writeDateTime(offsets[2], object.updateAt);
+  writer.writeLong(offsets[3], object.vesselCapacityML);
+  writer.writeString(offsets[4], object.vesselColor);
+  writer.writeString(offsets[5], object.vesselIcon);
+  writer.writeString(offsets[6], object.vesselName);
 }
 
 Record _recordDeserialize(
@@ -78,6 +120,10 @@ Record _recordDeserialize(
   object.createAt = reader.readDateTimeOrNull(offsets[1]);
   object.id = id;
   object.updateAt = reader.readDateTimeOrNull(offsets[2]);
+  object.vesselCapacityML = reader.readLongOrNull(offsets[3]);
+  object.vesselColor = reader.readStringOrNull(offsets[4]);
+  object.vesselIcon = reader.readStringOrNull(offsets[5]);
+  object.vesselName = reader.readStringOrNull(offsets[6]);
   return object;
 }
 
@@ -94,6 +140,14 @@ P _recordDeserializeProp<P>(
       return (reader.readDateTimeOrNull(offset)) as P;
     case 2:
       return (reader.readDateTimeOrNull(offset)) as P;
+    case 3:
+      return (reader.readLongOrNull(offset)) as P;
+    case 4:
+      return (reader.readStringOrNull(offset)) as P;
+    case 5:
+      return (reader.readStringOrNull(offset)) as P;
+    case 6:
+      return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -445,6 +499,515 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
       ));
     });
   }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselCapacityMLIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'vesselCapacityML',
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition>
+      vesselCapacityMLIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'vesselCapacityML',
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselCapacityMLEqualTo(
+      int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'vesselCapacityML',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition>
+      vesselCapacityMLGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'vesselCapacityML',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselCapacityMLLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'vesselCapacityML',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselCapacityMLBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'vesselCapacityML',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselColorIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'vesselColor',
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselColorIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'vesselColor',
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselColorEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'vesselColor',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselColorGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'vesselColor',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselColorLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'vesselColor',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselColorBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'vesselColor',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselColorStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'vesselColor',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselColorEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'vesselColor',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselColorContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'vesselColor',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselColorMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'vesselColor',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselColorIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'vesselColor',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselColorIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'vesselColor',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselIconIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'vesselIcon',
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselIconIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'vesselIcon',
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselIconEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'vesselIcon',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselIconGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'vesselIcon',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselIconLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'vesselIcon',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselIconBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'vesselIcon',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselIconStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'vesselIcon',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselIconEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'vesselIcon',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselIconContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'vesselIcon',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselIconMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'vesselIcon',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselIconIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'vesselIcon',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselIconIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'vesselIcon',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselNameIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'vesselName',
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselNameIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'vesselName',
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselNameEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'vesselName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselNameGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'vesselName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselNameLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'vesselName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselNameBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'vesselName',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselNameStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'vesselName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselNameEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'vesselName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselNameContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'vesselName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselNameMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'vesselName',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselNameIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'vesselName',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> vesselNameIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'vesselName',
+        value: '',
+      ));
+    });
+  }
 }
 
 extension RecordQueryObject on QueryBuilder<Record, Record, QFilterCondition> {}
@@ -485,6 +1048,54 @@ extension RecordQuerySortBy on QueryBuilder<Record, Record, QSortBy> {
   QueryBuilder<Record, Record, QAfterSortBy> sortByUpdateAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updateAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> sortByVesselCapacityML() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'vesselCapacityML', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> sortByVesselCapacityMLDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'vesselCapacityML', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> sortByVesselColor() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'vesselColor', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> sortByVesselColorDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'vesselColor', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> sortByVesselIcon() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'vesselIcon', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> sortByVesselIconDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'vesselIcon', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> sortByVesselName() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'vesselName', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> sortByVesselNameDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'vesselName', Sort.desc);
     });
   }
 }
@@ -537,6 +1148,54 @@ extension RecordQuerySortThenBy on QueryBuilder<Record, Record, QSortThenBy> {
       return query.addSortBy(r'updateAt', Sort.desc);
     });
   }
+
+  QueryBuilder<Record, Record, QAfterSortBy> thenByVesselCapacityML() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'vesselCapacityML', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> thenByVesselCapacityMLDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'vesselCapacityML', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> thenByVesselColor() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'vesselColor', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> thenByVesselColorDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'vesselColor', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> thenByVesselIcon() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'vesselIcon', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> thenByVesselIconDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'vesselIcon', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> thenByVesselName() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'vesselName', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> thenByVesselNameDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'vesselName', Sort.desc);
+    });
+  }
 }
 
 extension RecordQueryWhereDistinct on QueryBuilder<Record, Record, QDistinct> {
@@ -555,6 +1214,33 @@ extension RecordQueryWhereDistinct on QueryBuilder<Record, Record, QDistinct> {
   QueryBuilder<Record, Record, QDistinct> distinctByUpdateAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'updateAt');
+    });
+  }
+
+  QueryBuilder<Record, Record, QDistinct> distinctByVesselCapacityML() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'vesselCapacityML');
+    });
+  }
+
+  QueryBuilder<Record, Record, QDistinct> distinctByVesselColor(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'vesselColor', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Record, Record, QDistinct> distinctByVesselIcon(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'vesselIcon', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Record, Record, QDistinct> distinctByVesselName(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'vesselName', caseSensitive: caseSensitive);
     });
   }
 }
@@ -581,6 +1267,30 @@ extension RecordQueryProperty on QueryBuilder<Record, Record, QQueryProperty> {
   QueryBuilder<Record, DateTime?, QQueryOperations> updateAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'updateAt');
+    });
+  }
+
+  QueryBuilder<Record, int?, QQueryOperations> vesselCapacityMLProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'vesselCapacityML');
+    });
+  }
+
+  QueryBuilder<Record, String?, QQueryOperations> vesselColorProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'vesselColor');
+    });
+  }
+
+  QueryBuilder<Record, String?, QQueryOperations> vesselIconProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'vesselIcon');
+    });
+  }
+
+  QueryBuilder<Record, String?, QQueryOperations> vesselNameProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'vesselName');
     });
   }
 }
