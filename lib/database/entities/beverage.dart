@@ -2,13 +2,12 @@ import 'package:isar/isar.dart';
 
 import 'entity.dart';
 
-part 'vessel.g.dart';
+part 'beverage.g.dart';
 
 @collection
-class Vessel extends Entity {
-  int? capacityML;
-
+class Beverage extends Entity {
   String? name;
   String? color;
-  String?  icon;
+  String? icon;
+  double? hydration;
 }

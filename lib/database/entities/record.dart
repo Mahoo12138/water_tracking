@@ -7,8 +7,8 @@ part 'record.g.dart';
 @collection
 class Record extends Entity {
   int? amountML;
-  String? vesselName;
-  String? vesselColor;
-  String? vesselIcon;
-  int? vesselCapacityML;
+  String? beverageName;
+  String? beverageColor;
+  String? beverageIcon;
+  double? beverageHydration;
 }

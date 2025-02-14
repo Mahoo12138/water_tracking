@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'vessel.dart';
+part of 'record.dart';
 
 // **************************************************************************
 // IsarCollectionGenerator
@@ -9,79 +9,84 @@ part of 'vessel.dart';
 // coverage:ignore-file
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
 
-extension GetVesselCollection on Isar {
-  IsarCollection<Vessel> get vessels => this.collection();
+extension GetRecordCollection on Isar {
+  IsarCollection<Record> get records => this.collection();
 }
 
-const VesselSchema = CollectionSchema(
-  name: r'Vessel',
-  id: 7333427523740067983,
+const RecordSchema = CollectionSchema(
+  name: r'Record',
+  id: -5560585825827271694,
   properties: {
-    r'capacityML': PropertySchema(
+    r'amountML': PropertySchema(
       id: 0,
-      name: r'capacityML',
+      name: r'amountML',
       type: IsarType.long,
     ),
-    r'color': PropertySchema(
+    r'beverageColor': PropertySchema(
       id: 1,
-      name: r'color',
+      name: r'beverageColor',
+      type: IsarType.string,
+    ),
+    r'beverageHydration': PropertySchema(
+      id: 2,
+      name: r'beverageHydration',
+      type: IsarType.double,
+    ),
+    r'beverageIcon': PropertySchema(
+      id: 3,
+      name: r'beverageIcon',
+      type: IsarType.string,
+    ),
+    r'beverageName': PropertySchema(
+      id: 4,
+      name: r'beverageName',
       type: IsarType.string,
     ),
     r'createAt': PropertySchema(
-      id: 2,
+      id: 5,
       name: r'createAt',
       type: IsarType.dateTime,
     ),
-    r'icon': PropertySchema(
-      id: 3,
-      name: r'icon',
-      type: IsarType.string,
-    ),
-    r'name': PropertySchema(
-      id: 4,
-      name: r'name',
-      type: IsarType.string,
-    ),
     r'updateAt': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'updateAt',
       type: IsarType.dateTime,
     )
   },
-  estimateSize: _vesselEstimateSize,
-  serialize: _vesselSerialize,
-  deserialize: _vesselDeserialize,
-  deserializeProp: _vesselDeserializeProp,
+  estimateSize: _recordEstimateSize,
+  serialize: _recordSerialize,
+  deserialize: _recordDeserialize,
+  deserializeProp: _recordDeserializeProp,
   idName: r'id',
   indexes: {},
   links: {},
   embeddedSchemas: {},
-  getId: _vesselGetId,
-  getLinks: _vesselGetLinks,
-  attach: _vesselAttach,
+  getId: _recordGetId,
+  getLinks: _recordGetLinks,
+  attach: _recordAttach,
   version: '3.1.0+1',
 );
 
-int _vesselEstimateSize(
-  Vessel object,
+int _recordEstimateSize(
+  Record object,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
   {
-    final value = object.color;
+    final value = object.beverageColor;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
   }
   {
-    final value = object.icon;
+    final value = object.beverageIcon;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
   }
   {
-    final value = object.name;
+    final value = object.beverageName;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
@@ -89,38 +94,40 @@ int _vesselEstimateSize(
   return bytesCount;
 }
 
-void _vesselSerialize(
-  Vessel object,
+void _recordSerialize(
+  Record object,
   IsarWriter writer,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeLong(offsets[0], object.capacityML);
-  writer.writeString(offsets[1], object.color);
-  writer.writeDateTime(offsets[2], object.createAt);
-  writer.writeString(offsets[3], object.icon);
-  writer.writeString(offsets[4], object.name);
-  writer.writeDateTime(offsets[5], object.updateAt);
+  writer.writeLong(offsets[0], object.amountML);
+  writer.writeString(offsets[1], object.beverageColor);
+  writer.writeDouble(offsets[2], object.beverageHydration);
+  writer.writeString(offsets[3], object.beverageIcon);
+  writer.writeString(offsets[4], object.beverageName);
+  writer.writeDateTime(offsets[5], object.createAt);
+  writer.writeDateTime(offsets[6], object.updateAt);
 }
 
-Vessel _vesselDeserialize(
+Record _recordDeserialize(
   Id id,
   IsarReader reader,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = Vessel();
-  object.capacityML = reader.readLongOrNull(offsets[0]);
-  object.color = reader.readStringOrNull(offsets[1]);
-  object.createAt = reader.readDateTimeOrNull(offsets[2]);
-  object.icon = reader.readStringOrNull(offsets[3]);
+  final object = Record();
+  object.amountML = reader.readLongOrNull(offsets[0]);
+  object.beverageColor = reader.readStringOrNull(offsets[1]);
+  object.beverageHydration = reader.readDoubleOrNull(offsets[2]);
+  object.beverageIcon = reader.readStringOrNull(offsets[3]);
+  object.beverageName = reader.readStringOrNull(offsets[4]);
+  object.createAt = reader.readDateTimeOrNull(offsets[5]);
   object.id = id;
-  object.name = reader.readStringOrNull(offsets[4]);
-  object.updateAt = reader.readDateTimeOrNull(offsets[5]);
+  object.updateAt = reader.readDateTimeOrNull(offsets[6]);
   return object;
 }
 
-P _vesselDeserializeProp<P>(
+P _recordDeserializeProp<P>(
   IsarReader reader,
   int propertyId,
   int offset,
@@ -132,40 +139,42 @@ P _vesselDeserializeProp<P>(
     case 1:
       return (reader.readStringOrNull(offset)) as P;
     case 2:
-      return (reader.readDateTimeOrNull(offset)) as P;
+      return (reader.readDoubleOrNull(offset)) as P;
     case 3:
       return (reader.readStringOrNull(offset)) as P;
     case 4:
       return (reader.readStringOrNull(offset)) as P;
     case 5:
       return (reader.readDateTimeOrNull(offset)) as P;
+    case 6:
+      return (reader.readDateTimeOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
 }
 
-Id _vesselGetId(Vessel object) {
+Id _recordGetId(Record object) {
   return object.id;
 }
 
-List<IsarLinkBase<dynamic>> _vesselGetLinks(Vessel object) {
+List<IsarLinkBase<dynamic>> _recordGetLinks(Record object) {
   return [];
 }
 
-void _vesselAttach(IsarCollection<dynamic> col, Id id, Vessel object) {
+void _recordAttach(IsarCollection<dynamic> col, Id id, Record object) {
   object.id = id;
 }
 
-extension VesselQueryWhereSort on QueryBuilder<Vessel, Vessel, QWhere> {
-  QueryBuilder<Vessel, Vessel, QAfterWhere> anyId() {
+extension RecordQueryWhereSort on QueryBuilder<Record, Record, QWhere> {
+  QueryBuilder<Record, Record, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
     });
   }
 }
 
-extension VesselQueryWhere on QueryBuilder<Vessel, Vessel, QWhereClause> {
-  QueryBuilder<Vessel, Vessel, QAfterWhereClause> idEqualTo(Id id) {
+extension RecordQueryWhere on QueryBuilder<Record, Record, QWhereClause> {
+  QueryBuilder<Record, Record, QAfterWhereClause> idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
         lower: id,
@@ -174,7 +183,7 @@ extension VesselQueryWhere on QueryBuilder<Vessel, Vessel, QWhereClause> {
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterWhereClause> idNotEqualTo(Id id) {
+  QueryBuilder<Record, Record, QAfterWhereClause> idNotEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -196,7 +205,7 @@ extension VesselQueryWhere on QueryBuilder<Vessel, Vessel, QWhereClause> {
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterWhereClause> idGreaterThan(Id id,
+  QueryBuilder<Record, Record, QAfterWhereClause> idGreaterThan(Id id,
       {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
@@ -205,7 +214,7 @@ extension VesselQueryWhere on QueryBuilder<Vessel, Vessel, QWhereClause> {
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterWhereClause> idLessThan(Id id,
+  QueryBuilder<Record, Record, QAfterWhereClause> idLessThan(Id id,
       {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
@@ -214,7 +223,7 @@ extension VesselQueryWhere on QueryBuilder<Vessel, Vessel, QWhereClause> {
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterWhereClause> idBetween(
+  QueryBuilder<Record, Record, QAfterWhereClause> idBetween(
     Id lowerId,
     Id upperId, {
     bool includeLower = true,
@@ -231,60 +240,60 @@ extension VesselQueryWhere on QueryBuilder<Vessel, Vessel, QWhereClause> {
   }
 }
 
-extension VesselQueryFilter on QueryBuilder<Vessel, Vessel, QFilterCondition> {
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> capacityMLIsNull() {
+extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
+  QueryBuilder<Record, Record, QAfterFilterCondition> amountMLIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'capacityML',
+        property: r'amountML',
       ));
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> capacityMLIsNotNull() {
+  QueryBuilder<Record, Record, QAfterFilterCondition> amountMLIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'capacityML',
+        property: r'amountML',
       ));
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> capacityMLEqualTo(
+  QueryBuilder<Record, Record, QAfterFilterCondition> amountMLEqualTo(
       int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'capacityML',
+        property: r'amountML',
         value: value,
       ));
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> capacityMLGreaterThan(
+  QueryBuilder<Record, Record, QAfterFilterCondition> amountMLGreaterThan(
     int? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'capacityML',
+        property: r'amountML',
         value: value,
       ));
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> capacityMLLessThan(
+  QueryBuilder<Record, Record, QAfterFilterCondition> amountMLLessThan(
     int? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'capacityML',
+        property: r'amountML',
         value: value,
       ));
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> capacityMLBetween(
+  QueryBuilder<Record, Record, QAfterFilterCondition> amountMLBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
@@ -292,7 +301,7 @@ extension VesselQueryFilter on QueryBuilder<Vessel, Vessel, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'capacityML',
+        property: r'amountML',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -301,36 +310,36 @@ extension VesselQueryFilter on QueryBuilder<Vessel, Vessel, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> colorIsNull() {
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageColorIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'color',
+        property: r'beverageColor',
       ));
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> colorIsNotNull() {
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageColorIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'color',
+        property: r'beverageColor',
       ));
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> colorEqualTo(
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageColorEqualTo(
     String? value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'color',
+        property: r'beverageColor',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> colorGreaterThan(
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageColorGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -338,14 +347,14 @@ extension VesselQueryFilter on QueryBuilder<Vessel, Vessel, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'color',
+        property: r'beverageColor',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> colorLessThan(
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageColorLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -353,14 +362,14 @@ extension VesselQueryFilter on QueryBuilder<Vessel, Vessel, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'color',
+        property: r'beverageColor',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> colorBetween(
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageColorBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -369,7 +378,7 @@ extension VesselQueryFilter on QueryBuilder<Vessel, Vessel, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'color',
+        property: r'beverageColor',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -379,75 +388,449 @@ extension VesselQueryFilter on QueryBuilder<Vessel, Vessel, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> colorStartsWith(
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageColorStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'color',
+        property: r'beverageColor',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> colorEndsWith(
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageColorEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'color',
+        property: r'beverageColor',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> colorContains(
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageColorContains(
       String value,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
-        property: r'color',
+        property: r'beverageColor',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> colorMatches(
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageColorMatches(
       String pattern,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
-        property: r'color',
+        property: r'beverageColor',
         wildcard: pattern,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> colorIsEmpty() {
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageColorIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'color',
+        property: r'beverageColor',
         value: '',
       ));
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> colorIsNotEmpty() {
+  QueryBuilder<Record, Record, QAfterFilterCondition>
+      beverageColorIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'color',
+        property: r'beverageColor',
         value: '',
       ));
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> createAtIsNull() {
+  QueryBuilder<Record, Record, QAfterFilterCondition>
+      beverageHydrationIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'beverageHydration',
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition>
+      beverageHydrationIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'beverageHydration',
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageHydrationEqualTo(
+    double? value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'beverageHydration',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition>
+      beverageHydrationGreaterThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'beverageHydration',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageHydrationLessThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'beverageHydration',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageHydrationBetween(
+    double? lower,
+    double? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'beverageHydration',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageIconIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'beverageIcon',
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageIconIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'beverageIcon',
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageIconEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'beverageIcon',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageIconGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'beverageIcon',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageIconLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'beverageIcon',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageIconBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'beverageIcon',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageIconStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'beverageIcon',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageIconEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'beverageIcon',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageIconContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'beverageIcon',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageIconMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'beverageIcon',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageIconIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'beverageIcon',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageIconIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'beverageIcon',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageNameIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'beverageName',
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageNameIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'beverageName',
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageNameEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'beverageName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageNameGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'beverageName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageNameLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'beverageName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageNameBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'beverageName',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageNameStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'beverageName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageNameEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'beverageName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageNameContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'beverageName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageNameMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'beverageName',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageNameIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'beverageName',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> beverageNameIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'beverageName',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> createAtIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
         property: r'createAt',
@@ -455,7 +838,7 @@ extension VesselQueryFilter on QueryBuilder<Vessel, Vessel, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> createAtIsNotNull() {
+  QueryBuilder<Record, Record, QAfterFilterCondition> createAtIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'createAt',
@@ -463,7 +846,7 @@ extension VesselQueryFilter on QueryBuilder<Vessel, Vessel, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> createAtEqualTo(
+  QueryBuilder<Record, Record, QAfterFilterCondition> createAtEqualTo(
       DateTime? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -473,7 +856,7 @@ extension VesselQueryFilter on QueryBuilder<Vessel, Vessel, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> createAtGreaterThan(
+  QueryBuilder<Record, Record, QAfterFilterCondition> createAtGreaterThan(
     DateTime? value, {
     bool include = false,
   }) {
@@ -486,7 +869,7 @@ extension VesselQueryFilter on QueryBuilder<Vessel, Vessel, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> createAtLessThan(
+  QueryBuilder<Record, Record, QAfterFilterCondition> createAtLessThan(
     DateTime? value, {
     bool include = false,
   }) {
@@ -499,7 +882,7 @@ extension VesselQueryFilter on QueryBuilder<Vessel, Vessel, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> createAtBetween(
+  QueryBuilder<Record, Record, QAfterFilterCondition> createAtBetween(
     DateTime? lower,
     DateTime? upper, {
     bool includeLower = true,
@@ -516,152 +899,7 @@ extension VesselQueryFilter on QueryBuilder<Vessel, Vessel, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> iconIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'icon',
-      ));
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> iconIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'icon',
-      ));
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> iconEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'icon',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> iconGreaterThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'icon',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> iconLessThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'icon',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> iconBetween(
-    String? lower,
-    String? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'icon',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> iconStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'icon',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> iconEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'icon',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> iconContains(String value,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'icon',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> iconMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'icon',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> iconIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'icon',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> iconIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'icon',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> idEqualTo(Id value) {
+  QueryBuilder<Record, Record, QAfterFilterCondition> idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'id',
@@ -670,7 +908,7 @@ extension VesselQueryFilter on QueryBuilder<Vessel, Vessel, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> idGreaterThan(
+  QueryBuilder<Record, Record, QAfterFilterCondition> idGreaterThan(
     Id value, {
     bool include = false,
   }) {
@@ -683,7 +921,7 @@ extension VesselQueryFilter on QueryBuilder<Vessel, Vessel, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> idLessThan(
+  QueryBuilder<Record, Record, QAfterFilterCondition> idLessThan(
     Id value, {
     bool include = false,
   }) {
@@ -696,7 +934,7 @@ extension VesselQueryFilter on QueryBuilder<Vessel, Vessel, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> idBetween(
+  QueryBuilder<Record, Record, QAfterFilterCondition> idBetween(
     Id lower,
     Id upper, {
     bool includeLower = true,
@@ -713,152 +951,7 @@ extension VesselQueryFilter on QueryBuilder<Vessel, Vessel, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> nameIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'name',
-      ));
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> nameIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'name',
-      ));
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> nameEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> nameGreaterThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> nameLessThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> nameBetween(
-    String? lower,
-    String? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'name',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> nameStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> nameEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> nameContains(String value,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> nameMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'name',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> nameIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'name',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> nameIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'name',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> updateAtIsNull() {
+  QueryBuilder<Record, Record, QAfterFilterCondition> updateAtIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
         property: r'updateAt',
@@ -866,7 +959,7 @@ extension VesselQueryFilter on QueryBuilder<Vessel, Vessel, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> updateAtIsNotNull() {
+  QueryBuilder<Record, Record, QAfterFilterCondition> updateAtIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'updateAt',
@@ -874,7 +967,7 @@ extension VesselQueryFilter on QueryBuilder<Vessel, Vessel, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> updateAtEqualTo(
+  QueryBuilder<Record, Record, QAfterFilterCondition> updateAtEqualTo(
       DateTime? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -884,7 +977,7 @@ extension VesselQueryFilter on QueryBuilder<Vessel, Vessel, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> updateAtGreaterThan(
+  QueryBuilder<Record, Record, QAfterFilterCondition> updateAtGreaterThan(
     DateTime? value, {
     bool include = false,
   }) {
@@ -897,7 +990,7 @@ extension VesselQueryFilter on QueryBuilder<Vessel, Vessel, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> updateAtLessThan(
+  QueryBuilder<Record, Record, QAfterFilterCondition> updateAtLessThan(
     DateTime? value, {
     bool include = false,
   }) {
@@ -910,7 +1003,7 @@ extension VesselQueryFilter on QueryBuilder<Vessel, Vessel, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterFilterCondition> updateAtBetween(
+  QueryBuilder<Record, Record, QAfterFilterCondition> updateAtBetween(
     DateTime? lower,
     DateTime? upper, {
     bool includeLower = true,
@@ -928,249 +1021,286 @@ extension VesselQueryFilter on QueryBuilder<Vessel, Vessel, QFilterCondition> {
   }
 }
 
-extension VesselQueryObject on QueryBuilder<Vessel, Vessel, QFilterCondition> {}
+extension RecordQueryObject on QueryBuilder<Record, Record, QFilterCondition> {}
 
-extension VesselQueryLinks on QueryBuilder<Vessel, Vessel, QFilterCondition> {}
+extension RecordQueryLinks on QueryBuilder<Record, Record, QFilterCondition> {}
 
-extension VesselQuerySortBy on QueryBuilder<Vessel, Vessel, QSortBy> {
-  QueryBuilder<Vessel, Vessel, QAfterSortBy> sortByCapacityML() {
+extension RecordQuerySortBy on QueryBuilder<Record, Record, QSortBy> {
+  QueryBuilder<Record, Record, QAfterSortBy> sortByAmountML() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'capacityML', Sort.asc);
+      return query.addSortBy(r'amountML', Sort.asc);
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterSortBy> sortByCapacityMLDesc() {
+  QueryBuilder<Record, Record, QAfterSortBy> sortByAmountMLDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'capacityML', Sort.desc);
+      return query.addSortBy(r'amountML', Sort.desc);
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterSortBy> sortByColor() {
+  QueryBuilder<Record, Record, QAfterSortBy> sortByBeverageColor() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'color', Sort.asc);
+      return query.addSortBy(r'beverageColor', Sort.asc);
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterSortBy> sortByColorDesc() {
+  QueryBuilder<Record, Record, QAfterSortBy> sortByBeverageColorDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'color', Sort.desc);
+      return query.addSortBy(r'beverageColor', Sort.desc);
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterSortBy> sortByCreateAt() {
+  QueryBuilder<Record, Record, QAfterSortBy> sortByBeverageHydration() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'beverageHydration', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> sortByBeverageHydrationDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'beverageHydration', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> sortByBeverageIcon() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'beverageIcon', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> sortByBeverageIconDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'beverageIcon', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> sortByBeverageName() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'beverageName', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> sortByBeverageNameDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'beverageName', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> sortByCreateAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createAt', Sort.asc);
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterSortBy> sortByCreateAtDesc() {
+  QueryBuilder<Record, Record, QAfterSortBy> sortByCreateAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createAt', Sort.desc);
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterSortBy> sortByIcon() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'icon', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterSortBy> sortByIconDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'icon', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterSortBy> sortByName() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'name', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterSortBy> sortByNameDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'name', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterSortBy> sortByUpdateAt() {
+  QueryBuilder<Record, Record, QAfterSortBy> sortByUpdateAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updateAt', Sort.asc);
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterSortBy> sortByUpdateAtDesc() {
+  QueryBuilder<Record, Record, QAfterSortBy> sortByUpdateAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updateAt', Sort.desc);
     });
   }
 }
 
-extension VesselQuerySortThenBy on QueryBuilder<Vessel, Vessel, QSortThenBy> {
-  QueryBuilder<Vessel, Vessel, QAfterSortBy> thenByCapacityML() {
+extension RecordQuerySortThenBy on QueryBuilder<Record, Record, QSortThenBy> {
+  QueryBuilder<Record, Record, QAfterSortBy> thenByAmountML() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'capacityML', Sort.asc);
+      return query.addSortBy(r'amountML', Sort.asc);
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterSortBy> thenByCapacityMLDesc() {
+  QueryBuilder<Record, Record, QAfterSortBy> thenByAmountMLDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'capacityML', Sort.desc);
+      return query.addSortBy(r'amountML', Sort.desc);
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterSortBy> thenByColor() {
+  QueryBuilder<Record, Record, QAfterSortBy> thenByBeverageColor() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'color', Sort.asc);
+      return query.addSortBy(r'beverageColor', Sort.asc);
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterSortBy> thenByColorDesc() {
+  QueryBuilder<Record, Record, QAfterSortBy> thenByBeverageColorDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'color', Sort.desc);
+      return query.addSortBy(r'beverageColor', Sort.desc);
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterSortBy> thenByCreateAt() {
+  QueryBuilder<Record, Record, QAfterSortBy> thenByBeverageHydration() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'beverageHydration', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> thenByBeverageHydrationDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'beverageHydration', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> thenByBeverageIcon() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'beverageIcon', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> thenByBeverageIconDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'beverageIcon', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> thenByBeverageName() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'beverageName', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> thenByBeverageNameDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'beverageName', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> thenByCreateAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createAt', Sort.asc);
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterSortBy> thenByCreateAtDesc() {
+  QueryBuilder<Record, Record, QAfterSortBy> thenByCreateAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createAt', Sort.desc);
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterSortBy> thenByIcon() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'icon', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterSortBy> thenByIconDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'icon', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterSortBy> thenById() {
+  QueryBuilder<Record, Record, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterSortBy> thenByIdDesc() {
+  QueryBuilder<Record, Record, QAfterSortBy> thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterSortBy> thenByName() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'name', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterSortBy> thenByNameDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'name', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QAfterSortBy> thenByUpdateAt() {
+  QueryBuilder<Record, Record, QAfterSortBy> thenByUpdateAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updateAt', Sort.asc);
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QAfterSortBy> thenByUpdateAtDesc() {
+  QueryBuilder<Record, Record, QAfterSortBy> thenByUpdateAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updateAt', Sort.desc);
     });
   }
 }
 
-extension VesselQueryWhereDistinct on QueryBuilder<Vessel, Vessel, QDistinct> {
-  QueryBuilder<Vessel, Vessel, QDistinct> distinctByCapacityML() {
+extension RecordQueryWhereDistinct on QueryBuilder<Record, Record, QDistinct> {
+  QueryBuilder<Record, Record, QDistinct> distinctByAmountML() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'capacityML');
+      return query.addDistinctBy(r'amountML');
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QDistinct> distinctByColor(
+  QueryBuilder<Record, Record, QDistinct> distinctByBeverageColor(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'color', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'beverageColor',
+          caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QDistinct> distinctByCreateAt() {
+  QueryBuilder<Record, Record, QDistinct> distinctByBeverageHydration() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'beverageHydration');
+    });
+  }
+
+  QueryBuilder<Record, Record, QDistinct> distinctByBeverageIcon(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'beverageIcon', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Record, Record, QDistinct> distinctByBeverageName(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'beverageName', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Record, Record, QDistinct> distinctByCreateAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'createAt');
     });
   }
 
-  QueryBuilder<Vessel, Vessel, QDistinct> distinctByIcon(
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'icon', caseSensitive: caseSensitive);
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QDistinct> distinctByName(
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
-    });
-  }
-
-  QueryBuilder<Vessel, Vessel, QDistinct> distinctByUpdateAt() {
+  QueryBuilder<Record, Record, QDistinct> distinctByUpdateAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'updateAt');
     });
   }
 }
 
-extension VesselQueryProperty on QueryBuilder<Vessel, Vessel, QQueryProperty> {
-  QueryBuilder<Vessel, int, QQueryOperations> idProperty() {
+extension RecordQueryProperty on QueryBuilder<Record, Record, QQueryProperty> {
+  QueryBuilder<Record, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
     });
   }
 
-  QueryBuilder<Vessel, int?, QQueryOperations> capacityMLProperty() {
+  QueryBuilder<Record, int?, QQueryOperations> amountMLProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'capacityML');
+      return query.addPropertyName(r'amountML');
     });
   }
 
-  QueryBuilder<Vessel, String?, QQueryOperations> colorProperty() {
+  QueryBuilder<Record, String?, QQueryOperations> beverageColorProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'color');
+      return query.addPropertyName(r'beverageColor');
     });
   }
 
-  QueryBuilder<Vessel, DateTime?, QQueryOperations> createAtProperty() {
+  QueryBuilder<Record, double?, QQueryOperations> beverageHydrationProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'beverageHydration');
+    });
+  }
+
+  QueryBuilder<Record, String?, QQueryOperations> beverageIconProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'beverageIcon');
+    });
+  }
+
+  QueryBuilder<Record, String?, QQueryOperations> beverageNameProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'beverageName');
+    });
+  }
+
+  QueryBuilder<Record, DateTime?, QQueryOperations> createAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'createAt');
     });
   }
 
-  QueryBuilder<Vessel, String?, QQueryOperations> iconProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'icon');
-    });
-  }
-
-  QueryBuilder<Vessel, String?, QQueryOperations> nameProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'name');
-    });
-  }
-
-  QueryBuilder<Vessel, DateTime?, QQueryOperations> updateAtProperty() {
+  QueryBuilder<Record, DateTime?, QQueryOperations> updateAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'updateAt');
     });

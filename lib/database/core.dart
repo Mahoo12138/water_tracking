@@ -1,113 +1,194 @@
-import 'dart:async';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
+import 'entities/entity.dart';
+import 'entities/record.dart';
+import 'entities/beverage.dart';
+import 'entities/reminder.dart';
+import 'entities/setting.dart';
 
-import '../common/entities/entity.dart';
-import '../common/entities/record.dart';
-import '../common/entities/vessel.dart';
-import '../common/entities/reminder.dart';
-import '../common/entities/setting.dart';
+class IsarDatabase {
+  static IsarDatabase? _instance;
+  late Future<Isar> db;
 
-class IsarService {
-  static final IsarService _instance = IsarService._internal();
-  factory IsarService() => _instance;
-  IsarService._internal();
-
-  late Isar _isar;
-  bool _isInitialized = false;
-
-  /// Initialize the Isar database
-  Future<void> initialize() async {
-    if (_isInitialized) return;
-
-    final dir = await getApplicationSupportDirectory();
-    _isar = await Isar.open(
-      [
-        RecordSchema,
-        VesselSchema,
-        ReminderSchema,
-        SettingSchema,
-      ],
-      directory: dir.path,
-    );
-
-    _isInitialized = true;
+  IsarDatabase._() {
+    db = openDB();
   }
 
-  /// Close the Isar database
-  Future<void> close() async {
-    if (_isInitialized) {
-      await _isar.close();
-      _isInitialized = false;
+  static IsarDatabase get instance {
+    _instance ??= IsarDatabase._();
+    return _instance!;
+  }
+
+  // 初始化默认饮品数据
+  Future<void> _initDefaultBeverages() async {
+    final beverageDB = await db;
+    final count = await beverageDB.beverages.count();
+    
+    if (count == 0) {
+      final defaultBeverages = [
+        Beverage()
+          ..name = "Water"
+          ..color = "#2196F3"
+          ..icon = "water"
+          ..hydration = 1.0,
+        Beverage()
+          ..name = "Green Tea"
+          ..color = "#4CAF50"
+          ..icon = "tea"
+          ..hydration = 0.85,
+        Beverage()
+          ..name = "Coffee"
+          ..color = "#795548"
+          ..icon = "coffee"
+          ..hydration = 0.6,
+        Beverage()
+          ..name = "Milk"
+          ..color = "#FFFFFF"
+          ..icon = "milk"
+          ..hydration = 0.95,
+      ];
+
+      await beverageDB.writeTxn(() async {
+        await beverageDB.beverages.putAll(defaultBeverages);
+      });
     }
   }
 
-  /// Generic method to create or update an entity
-  Future<void> save<T extends Entity>(T entity) async {
-    await _ensureInitialized();
+  // 初始化默认设置
+  Future<void> _initDefaultSettings() async {
+    final settingDB = await db;
+    final count = await settingDB.settings.count();
+    
+    if (count == 0) {
+      final defaultSettings = [
+        Setting()
+          ..name = "daily_water_goal"
+          ..value = "2400",
+        Setting()
+          ..name = "notification_enabled"
+          ..value = "true",
+        Setting()
+          ..name = "theme_mode"
+          ..value = "system",
+        Setting()
+          ..name = "language"
+          ..value = "system",
+      ];
 
-    await _isar.writeTxn(() async {
+      await settingDB.writeTxn(() async {
+        await settingDB.settings.putAll(defaultSettings);
+      });
+    }
+  }
+
+  // 初始化默认提醒
+  Future<void> _initDefaultReminders() async {
+    final reminderDB = await db;
+    final count = await reminderDB.reminders.count();
+    
+    if (count == 0) {
+      final defaultReminder = Reminder()
+        ..enabled = true
+        ..type = "interval"
+        ..weeks = [1, 2, 3, 4, 5]  // 周一到周五
+        ..startTime = DateTime(2024, 1, 1, 9, 0)  // 9:00
+        ..endTime = DateTime(2024, 1, 1, 18, 0)   // 18:00
+        ..interval = 120;  // 每2小时提醒一次
+
+      await reminderDB.writeTxn(() async {
+        await reminderDB.reminders.put(defaultReminder);
+      });
+    }
+  }
+
+  Future<void> initializeDatabase() async {
+    final isar = await db;
+    // 初始化默认数据
+    await _initDefaultBeverages();
+    await _initDefaultSettings();
+    await _initDefaultReminders();
+  }
+
+  Future<Isar> openDB() async {
+    if (Isar.instanceNames.isEmpty) {
+      final dir = await getApplicationDocumentsDirectory();
+      return await Isar.open(
+        [
+          RecordSchema,
+          BeverageSchema,
+          ReminderSchema,
+          SettingSchema,
+        ],
+        directory: dir.path,
+      );
+    }
+
+    return Future.value(Isar.getInstance());
+  }
+
+  // 通用的 CRUD 操作
+  Future<T?> get<T>(int id) async {
+    final isar = await db;
+    return await isar.collection<T>().get(id);
+  }
+
+  Future<List<T>> getAll<T>() async {
+    final isar = await db;
+    return await isar.collection<T>().where().findAll();
+  }
+
+  Future<int> save<T>(T entity) async {
+    final isar = await db;
+    if (entity is Entity) {
       entity.updateAt = DateTime.now();
       entity.createAt ??= DateTime.now();
-      await _isar.collection<T>().put(entity);
-    });
-  }
-
-  /// Generic method to delete an entity
-  Future<void> delete<T extends Entity>(int id) async {
-    await _ensureInitialized();
-
-    await _isar.writeTxn(() async {
-      await _isar.collection<T>().delete(id);
-    });
-  }
-
-  /// Generic method to get an entity by ID
-  Future<T?> getById<T extends Entity>(int id) async {
-    await _ensureInitialized();
-
-    return await _isar.collection<T>().get(id);
-  }
-
-  /// Generic method to get all entities of a specific type
-  Future<List<T>> getAll<T extends Entity>() async {
-    await _ensureInitialized();
-
-    return await _isar.collection<T>().where().findAll();
-  }
-
-  /// Generic method to clear all entities of a specific type
-  Future<void> clear<T extends Entity>() async {
-    await _ensureInitialized();
-
-    await _isar.writeTxn(() async {
-      await _isar.collection<T>().clear();
-    });
-  }
-
-  /// Ensure the database is initialized before performing operations
-  Future<void> _ensureInitialized() async {
-    if (!_isInitialized) {
-      await initialize();
     }
+    return await isar.writeTxn(() async {
+      return await isar.collection<T>().put(entity);
+    });
   }
 
-  /// Watch a specific collection for changes
-  Stream<List<T>> watchAll<T extends Entity>() {
-    return _isar.collection<T>().where().watch();
+  Future<bool> delete<T>(int id) async {
+    final isar = await db;
+    return await isar.writeTxn(() async {
+      return await isar.collection<T>().delete(id);
+    });
   }
 
-  /// Perform a query with custom where clauses
-  Future<List<T>> query<T extends Entity>(
-    QueryBuilder<T, T, QWhere> Function(QueryBuilder<T, T, QWhere>)
-        queryBuilder,
-  ) async {
-    await _ensureInitialized();
-
-    return queryBuilder(_isar.collection<T>().where()).findAll();
+  Future<int> saveAll<T>(List<T> entities) async {
+    final isar = await db;
+    final now = DateTime.now();
+    if (T is Entity) {
+      for (final entity in entities) {
+        if (entity is Entity) {
+          entity.updateAt = now;
+          entity.createAt ??= now;
+        }
+      }
+    }
+    return await isar.writeTxn(() async {
+      var ids = await isar.collection<T>().putAll(entities);
+      return ids.length;
+    });
   }
-}
 
-extension EntityExtension on Entity {
-  bool get isNew => id == Isar.autoIncrement;
+  Future<int> deleteAll<T>(List<int> ids) async {
+    final isar = await db;
+    return await isar.writeTxn(() async {
+      return await isar.collection<T>().deleteAll(ids);
+    });
+  }
+
+  Future<void> clear<T>() async {
+    final isar = await db;
+    await isar.writeTxn(() async {
+      await isar.collection<T>().clear();
+    });
+  }
+
+  // 查询构建器
+  Future<QueryBuilder<T, T, QWhere>> where<T>() async {
+    final isar = await db;
+    return isar.collection<T>().where();
+  }
 }
