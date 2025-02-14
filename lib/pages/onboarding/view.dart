@@ -8,6 +8,7 @@ import 'package:water_tracking/common/widgets/LowKeyButton.dart';
 import 'package:water_tracking/common/widgets/PageIndicator.dart';
 import 'package:water_tracking/common/widgets/SettingsContainerOutlined.dart';
 import 'package:water_tracking/common/widgets/Text.dart';
+import 'package:water_tracking/database/setting_db.dart';
 import 'package:water_tracking/foundation/extensions/context_ext.dart';
 // import 'package:budget/database/initializeDefaultDatabase.dart';
 
@@ -27,11 +28,7 @@ class OnBoardingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: OnBoardingPageBody(
-            popNavigationWhenDone: popNavigationWhenDone,
-            showPreviewDemoButton: showPreviewDemoButton));
+    return Scaffold(resizeToAvoidBottomInset: false, body: OnBoardingPageBody(popNavigationWhenDone: popNavigationWhenDone, showPreviewDemoButton: showPreviewDemoButton));
   }
 }
 
@@ -50,6 +47,8 @@ class OnBoardingPageBody extends StatefulWidget {
 
 class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
   final PageController controller = PageController();
+  final TextEditingController nameController = TextEditingController();
+  final settingDB = SettingDB();
 
   double? selectedAmount;
   int selectedPeriodLength = 1;
@@ -69,6 +68,25 @@ class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
     image: AssetImage("assets/landing/PigBank.png"),
   );
 
+  // 添加性别选择状态
+  String? selectedGender;
+
+  // 添加体重相关状态
+  String weightUnit = 'kg';  // 默认单位为kg
+  double weight = 60.0;      // 默认体重为60kg
+
+  // 添加活动等级状态
+  int? selectedActivityLevel;
+
+  // 添加气候选择状态
+  int? selectedClimate;
+
+  // 添加目标水量相关状态
+  String waterUnit = 'ml';
+  double calculatedGoal = 0.0;
+  bool isEditingGoal = false;
+  final TextEditingController goalController = TextEditingController();
+
   @override
   void didChangeDependencies() {
     precacheImage(imageLanding1.image, context);
@@ -77,67 +95,15 @@ class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
     super.didChangeDependencies();
   }
 
-  nextNavigation({bool generatePreview = false}) async {
-    if (selectedAmount != null && selectedAmount != 0) {
-      // int order = await database.getAmountOfBudgets();
-      // await database.createOrUpdateBudget(
-      //   insert: true,
-      //   Budget(
-      //     budgetPk: "-1",
-      //     name: "default-budget-name".tr(),
-      //     amount: selectedAmount ?? 0,
-      //     startDate: selectedStartDate,
-      //     endDate: selectedEndDate ?? DateTime.now(),
-      //     addedTransactionsOnly: false,
-      //     periodLength: selectedPeriodLength,
-      //     dateCreated: DateTime.now(),
-      //     pinned: true,
-      //     order: order,
-      //     walletFk: "0",
-      //     reoccurrence: mapRecurrence(selectedRecurrence),
-      //     isAbsoluteSpendingLimit: false,
-      //     budgetTransactionFilters: [
-      //       ...(selectedIncludeIncome == false
-      //           ? [BudgetTransactionFilters.defaultBudgetTransactionFilters]
-      //           : [
-      //               BudgetTransactionFilters.includeIncome,
-      //               BudgetTransactionFilters.addedToOtherBudget,
-      //               BudgetTransactionFilters.addedToObjective,
-      //             ])
-      //     ],
-      //     income: false,
-      //     archived: false,
-      //   ),
-      // );
-    }
-    if (generatePreview) {
-      // openLoadingPopup(context);
-      // await generatePreviewData();
-      // popRoute(context);
-    }
-    if (widget.popNavigationWhenDone) {
-      // popRoute(context);
-    } else {
-      // updateSettings("hasOnboarded", true,
-      //     pagesNeedingRefresh: [], updateGlobalState: true);
-    }
-  }
-
-  FocusNode _focusNode = FocusNode();
-  late FocusAttachment _focusAttachment;
-
   @override
   void initState() {
     super.initState();
     _focusAttachment = _focusNode.attach(context, onKeyEvent: (node, event) {
-      if (event.logicalKey.keyLabel == "Go Back" ||
-          event.logicalKey == LogicalKeyboardKey.escape) {
+      if (event.logicalKey.keyLabel == "Go Back" || event.logicalKey == LogicalKeyboardKey.escape) {
         if (widget.popNavigationWhenDone) nextNavigation();
-      } else if (event.runtimeType == KeyDownEvent &&
-          event.logicalKey == LogicalKeyboardKey.arrowRight) {
+      } else if (event.runtimeType == KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowRight) {
         nextOnBoardPage();
-      } else if (event.runtimeType == KeyDownEvent &&
-          event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+      } else if (event.runtimeType == KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowLeft) {
         previousOnBoardPage();
       }
       return KeyEventResult.handled;
@@ -150,6 +116,9 @@ class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
       // We need to run this after the UI is loaded - after translations are loaded
       // await initializeDefaultDatabase();
     });
+
+    // 初始化计算目标水量
+    calculatedGoal = calculateDailyWaterGoal();
   }
 
   @override
@@ -158,7 +127,65 @@ class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
     super.dispose();
   }
 
-  void nextOnBoardPage() {
+  void nextOnBoardPage() async {
+    // 如果是第一页（昵称输入页），保存昵称
+    if ((controller.page?.round().toInt() ?? 0) == 0) {
+      final name = nameController.text.trim();
+      if (name.isEmpty) {
+        // 显示错误提示
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Please enter your name'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        return;
+      }
+      // 保存昵称到数据库
+      await settingDB.setValue('name', name);
+    }
+    // 如果是第二页（性别选择页），保存性别
+    else if ((controller.page?.round().toInt() ?? 0) == 1) {
+      if (selectedGender == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Please select your gender'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        return;
+      }
+      await settingDB.setValue('gender', selectedGender!.toUpperCase());
+    }
+    // 如果是第三页（体重选择页），保存体重和单位
+    else if ((controller.page?.round().toInt() ?? 0) == 2) {
+      await settingDB.setValue('weightUnit', weightUnit);
+      await settingDB.setValue('weight', weight.toString());
+    }
+    // 如果是第四页（活动等级页），保存活动等级
+    else if ((controller.page?.round().toInt() ?? 0) == 3) {
+      if (selectedActivityLevel == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please select your activity level'), behavior: SnackBarBehavior.floating),
+        );
+        return;
+      }
+      await settingDB.setValue('activityLevel', selectedActivityLevel.toString());
+    }
+    // 如果是第五页（气候选择页），保存气候等级
+    else if ((controller.page?.round().toInt() ?? 0) == 4) {
+      if (selectedClimate == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Please select your climate'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        return;
+      }
+      await settingDB.setValue('climateLevel', selectedClimate.toString());
+    }
+
     if ((controller.page?.round().toInt() ?? 0) + 1 == numPages) {
       nextNavigation();
     } else {
@@ -176,391 +203,695 @@ class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
     );
   }
 
-  int numPages = 3;
+  int numPages = 6;
+
+  // 性别选择项数据
+  final List<Map<String, dynamic>> genderOptions = [
+    {
+      'value': 'male',
+      'label': 'Male',
+      'icon': Icons.male,
+    },
+    {
+      'value': 'female',
+      'label': 'Female',
+      'icon': Icons.female,
+    },
+    {
+      'value': 'pregnant',
+      'label': 'Pregnant',
+      'icon': Icons.pregnant_woman,
+    },
+    {
+      'value': 'breastfeeding',
+      'label': 'Breastfeeding',
+      'icon': Icons.child_friendly,
+    },
+    {
+      'value': 'other',
+      'label': 'Other',
+      'icon': Icons.person_outline,
+    },
+  ];
+
+  // 活动等级选项数据
+  final List<Map<String, dynamic>> activityOptions = [
+    {
+      'value': 0,
+      'label': 'Sedentary',
+      'description': 'Less than 30 minutes a day of intentional exercise.',
+      'icon': Icons.weekend_outlined,
+    },
+    {
+      'value': 1,
+      'label': 'Light Activity',
+      'description': 'You do intentional exercise every day for at least 30 minutes.',
+      'icon': Icons.directions_walk_outlined,
+    },
+    {
+      'value': 2,
+      'label': 'Moderately Active',
+      'description': 'Exercise every day that is equivalent to walking for at least one hour and 45 minutes.',
+      'icon': Icons.directions_run_outlined,
+    },
+    {
+      'value': 3,
+      'label': 'Very Active',
+      'description': 'Exercise every day that is equivalent to briskly walking for at least four hours.',
+      'icon': Icons.sports_outlined,
+    },
+  ];
+
+  // 气候选项数据
+  final List<Map<String, dynamic>> climateOptions = [
+    {
+      'value': 0,
+      'label': 'Hot',
+      'description': 'High temperatures increase sweating and water loss',
+      'icon': Icons.wb_sunny_outlined,
+    },
+    {
+      'value': 1,
+      'label': 'Temperate',
+      'description': 'Moderate temperatures with balanced water needs',
+      'icon': Icons.cloud_outlined,
+    },
+    {
+      'value': 2,
+      'label': 'Cold',
+      'description': 'Cold air requires more water for breathing',
+      'icon': Icons.ac_unit_outlined,
+    },
+  ];
+
+  // 转换显示的体重值
+  String getDisplayWeight() {
+    return weight.toStringAsFixed(1);
+  }
+
+  // 单位转换
+  void toggleWeightUnit() {
+    setState(() {
+      if (weightUnit == 'kg') {
+        weightUnit = 'lbs';
+        weight = weight * 2.20462; // 转换为磅
+      } else {
+        weightUnit = 'kg';
+        weight = weight / 2.20462; // 转换为千克
+      }
+    });
+  }
+
+  // 计算每日目标水量的简单函数
+  double calculateDailyWaterGoal() {
+    // 基础水量：按体重计算（每公斤30-35ml）
+    double baseWater = weight * (weightUnit == 'kg' ? 33 : 15); // kg: 33ml/kg, lbs: 15ml/lb
+
+    // 活动等级调整
+    double activityMultiplier = 1.0;
+    switch (selectedActivityLevel) {
+      case 0: // Sedentary
+        activityMultiplier = 1.0;
+        break;
+      case 1: // Light Activity
+        activityMultiplier = 1.1;
+        break;
+      case 2: // Moderately Active
+        activityMultiplier = 1.2;
+        break;
+      case 3: // Very Active
+        activityMultiplier = 1.4;
+        break;
+    }
+
+    // 气候调整
+    double climateMultiplier = 1.0;
+    switch (selectedClimate) {
+      case 0: // Hot
+        climateMultiplier = 1.2;
+        break;
+      case 1: // Temperate
+        climateMultiplier = 1.0;
+        break;
+      case 2: // Cold
+        climateMultiplier = 1.1;
+        break;
+    }
+
+    // 性别调整
+    double genderMultiplier = 1.0;
+    switch (selectedGender) {
+      case 'male':
+        genderMultiplier = 1.0;
+        break;
+      case 'female':
+        genderMultiplier = 0.9;
+        break;
+      case 'pregnant':
+        genderMultiplier = 1.3;
+        break;
+      case 'breastfeeding':
+        genderMultiplier = 1.4;
+        break;
+      default:
+        genderMultiplier = 1.0;
+    }
+
+    double finalGoal = baseWater * activityMultiplier * climateMultiplier * genderMultiplier;
+    return finalGoal.roundToDouble();
+  }
+
+  void toggleWaterUnit() {
+    setState(() {
+      if (waterUnit == 'ml') {
+        waterUnit = 'oz';
+        calculatedGoal = calculatedGoal / 29.5735; // Convert ml to oz
+      } else {
+        waterUnit = 'ml';
+        calculatedGoal = calculatedGoal * 29.5735; // Convert oz to ml
+      }
+      goalController.text = calculatedGoal.round().toString();
+    });
+  }
+
+  void showGoalEditDialog() {
+    goalController.text = calculatedGoal.round().toString();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text('Cancel'),
+                  ),
+                  Text(
+                    'Edit Daily Goal',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        calculatedGoal = double.tryParse(goalController.text) ?? calculatedGoal;
+                      });
+                      Navigator.pop(context);
+                    },
+                    child: Text('Confirm'),
+                  ),
+                ],
+              ),
+            ),
+            Divider(),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  // 单位选择
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ChoiceChip(
+                        label: Text('ml'),
+                        selected: waterUnit == 'ml',
+                        onSelected: (_) {
+                          if (waterUnit != 'ml') {
+                            setState(() {
+                              toggleWaterUnit();
+                            });
+                          }
+                        },
+                        selectedColor: Theme.of(context).colorScheme.primaryContainer,
+                        labelStyle: TextStyle(
+                          color: waterUnit == 'ml'
+                              ? Theme.of(context).colorScheme.onPrimaryContainer
+                              : Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                      SizedBox(width: 16),
+                      ChoiceChip(
+                        label: Text('oz'),
+                        selected: waterUnit == 'oz',
+                        onSelected: (_) {
+                          if (waterUnit != 'oz') {
+                            setState(() {
+                              toggleWaterUnit();
+                            });
+                          }
+                        },
+                        selectedColor: Theme.of(context).colorScheme.primaryContainer,
+                        labelStyle: TextStyle(
+                          color: waterUnit == 'oz'
+                              ? Theme.of(context).colorScheme.onPrimaryContainer
+                              : Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 16),
+                  // 数值输入
+                  TextField(
+                    controller: goalController,
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.headlineMedium,
+                    decoration: InputDecoration(
+                      suffix: Text(waterUnit),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    autofocus: true,
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void nextNavigation({bool generatePreview = false}) async {
+    // 保存最终的目标水量
+    await settingDB.setValue('waterUnit', waterUnit);
+    await settingDB.setValue('dailyGoal', calculatedGoal.round().toString());
+    
+    // 导航到主页
+    if (mounted) {
+      context.go('/home');
+    }
+  }
+
+  FocusNode _focusNode = FocusNode();
+  late FocusAttachment _focusAttachment;
+
   @override
   Widget build(BuildContext context) {
     _focusAttachment.reparent();
+
     final List<Widget> children = [
-      // OnBoardPage(
-      //   widgets: [
-      //     Container(
-      //       constraints: BoxConstraints(
-      //           maxWidth: MediaQuery.sizeOf(context).height <=
-      //                   MediaQuery.sizeOf(context).width
-      //               ? MediaQuery.sizeOf(context).height * 0.5
-      //               : 300),
-      //       child: Image(
-      //         image: AssetImage("assets/landing/DepressedMan.png"),
-      //       ),
-      //     ),
-      //     SizedBox(height: 15),
-      //     Padding(
-      //       padding: const EdgeInsetsDirectional.symmetric(horizontal: 25),
-      //       child: TextFont(
-      //         text: "Losing track of your spending?",
-      //         fontWeight: FontWeight.bold,
-      //         textAlign: TextAlign.center,
-      //         fontSize: 25,
-      //         maxLines: 5,
-      //       ),
-      //     ),
-      //     SizedBox(height: 15),
-      //     Padding(
-      //       padding: const EdgeInsetsDirectional.symmetric(horizontal: 25),
-      //       child: TextFont(
-      //         text: "It's important to be mindful of your purchases.",
-      //         textAlign: TextAlign.center,
-      //         fontSize: 16,
-      //         maxLines: 5,
-      //       ),
-      //     ),
-      //   ],
-      // ),
       OnBoardPage(
         widgets: [
-          Container(
-            constraints: BoxConstraints(
-                maxWidth: MediaQuery.sizeOf(context).height <=
-                        MediaQuery.sizeOf(context).width
-                    ? MediaQuery.sizeOf(context).height * 0.5
-                    : 300),
-            child: imageLanding1,
-          ),
-          SizedBox(height: 15),
-          Padding(
-            padding: const EdgeInsetsDirectional.symmetric(horizontal: 25),
-            child: TextFont(
-              text: "onboarding-title-1",
-              // text: "onboarding-title-1".tr(namedArgs: {"app": globalAppName}),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.15),
+          Text(
+            'What is your name?',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              textAlign: TextAlign.center,
-              fontSize: 25,
-              maxLines: 5,
             ),
+            textAlign: TextAlign.center,
           ),
-          SizedBox(height: 15),
-          Padding(
-            padding: const EdgeInsetsDirectional.symmetric(horizontal: 25),
-            child: TextFont(
-              text: "onboarding-info-1".tr(),
-              textAlign: TextAlign.center,
-              fontSize: 16,
-              maxLines: 5,
+          SizedBox(height: 8),
+          Text(
+            'Only used in your profile and notifications',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
             ),
+            textAlign: TextAlign.center,
           ),
-          SizedBox(height: 55),
-        ],
-        // bottomWidget: widget.showPreviewDemoButton
-        //     ? PreviewDemoButton(
-        //         nextNavigation: nextNavigation,
-        //       )
-        //     : null,
-      ),
-      OnBoardPage(
-        widgets: [
-          Container(
-            constraints: BoxConstraints(
-                maxWidth: MediaQuery.sizeOf(context).height <=
-                        MediaQuery.sizeOf(context).width
-                    ? MediaQuery.sizeOf(context).height * 0.5
-                    : 300),
-            child: imageLanding2,
-          ),
-          SizedBox(height: 15),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.1),
           Padding(
-            padding: const EdgeInsetsDirectional.symmetric(horizontal: 25),
-            child: TextFont(
-              text: "onboarding-title-2".tr(),
-              fontWeight: FontWeight.bold,
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            child: TextField(
+              controller: nameController,
+              decoration: InputDecoration(
+                hintText: 'Enter your name',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              ),
               textAlign: TextAlign.center,
-              fontSize: 25,
-              maxLines: 5,
-            ),
-          ),
-          SizedBox(height: 10),
-          // BudgetDetails(
-          //   determineBottomButton: () {},
-          //   setSelectedAmount: (amount, _) {
-          //     setState(() {
-          //       selectedAmount = amount;
-          //     });
-          //   },
-          //   initialSelectedAmount: selectedAmount,
-          //   setSelectedPeriodLength: (length) {
-          //     setState(() {
-          //       selectedPeriodLength = length;
-          //     });
-          //   },
-          //   initialSelectedPeriodLength: selectedPeriodLength,
-          //   setSelectedRecurrence: (recurrence) {
-          //     setState(() {
-          //       selectedRecurrence = recurrence;
-          //     });
-          //   },
-          //   initialSelectedRecurrence: selectedRecurrence,
-          //   setSelectedStartDate: (date) {
-          //     setState(() {
-          //       selectedStartDate = date;
-          //     });
-          //   },
-          //   initialSelectedStartDate: selectedStartDate,
-          //   setSelectedEndDate: (date) {
-          //     setState(() {
-          //       selectedEndDate = date;
-          //     });
-          //   },
-          //   initialSelectedEndDate: selectedEndDate,
-          // ),
-          // This is pretty confusing, users can enable this later by editing the budget
-          // Opacity(
-          //   opacity: 0.8,
-          //   child: ChoiceChip(
-          //     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          //     selectedColor: appStateSettings["materialYou"]
-          //         ? null
-          //         : getColor(context, "lightDarkAccentHeavy"),
-          //     label: TextFont(
-          //       text: "include-income-onboarding-label".tr() +
-          //           (selectedIncludeIncome == false ? "?" : ""),
-          //       fontSize: 15,
-          //     ),
-          //     selected: selectedIncludeIncome,
-          //     onSelected: (bool selected) {
-          //       setState(() {
-          //         selectedIncludeIncome = selected;
-          //       });
-          //     },
-          //   ),
-          // ),
-
-          // StreamBuilder<AllWallets>(
-          //   stream: database.watchAllWalletsIndexed(),
-          //   builder: (context, snapshot) {
-          //     TransactionWallet? primaryWallet = snapshot
-          //         .data?.indexedByPk[appStateSettings["selectedWalletPk"]];
-          //     if (primaryWallet != null) {
-          //       return Padding(
-          //         padding: const EdgeInsetsDirectional.only(top: 15),
-          //         child: LowKeyButton(
-          //           onTap: () {
-          //             openBottomSheet(
-          //               context,
-          //               SizedBox.shrink(),
-          //               customBuilder:
-          //                   (context2, scrollController, sheetState) {
-          //                 return CustomScrollView(
-          //                   controller: scrollController,
-          //                   slivers: [
-          //                     SliverToBoxAdapter(
-          //                       child: PopupFramework(
-          //                         title: "select-primary-currency".tr(),
-          //                         subtitle:
-          //                             "select-primary-currency-description"
-          //                                 .tr(),
-          //                         child: SizedBox.shrink(),
-          //                         bottomSafeAreaExtraPadding: false,
-          //                       ),
-          //                     ),
-          //                     CurrencyPicker(
-          //                       showExchangeRateInfoNotice: false,
-          //                       onSelected: (selectedCurrency) {
-          //                         popRoute(context);
-          //                         database.createOrUpdateWallet(
-          //                             primaryWallet.copyWith(
-          //                                 currency: Value(selectedCurrency)));
-          //                       },
-          //                       initialCurrency: primaryWallet.currency,
-          //                       onHasFocus: () {
-          //                         // Disable scroll when focus - because iOS header height is different than that of Android.
-          //                         // Future.delayed(Duration(milliseconds: 500), () {
-          //                         //   addWalletPageKey.currentState?.scrollTo(250);
-          //                         // });
-          //                       },
-          //                       unSelectedColor: appStateSettings["materialYou"]
-          //                           ? null
-          //                           : getColor(context, "canvasContainer"),
-          //                     ),
-          //                   ],
-          //                 );
-          //               },
-          //             );
-          //           },
-          //           text: "change-currency".tr(),
-          //         ),
-          //       );
-          //     }
-          //     return SizedBox.shrink();
-          //   },
-          // ),
-          SizedBox(height: 15),
-          Padding(
-            padding: const EdgeInsetsDirectional.symmetric(horizontal: 25),
-            child: TextFont(
-              text: "onboarding-info-2-1".tr(),
-              textAlign: TextAlign.center,
-              fontSize: 15,
-              maxLines: 5,
-              textColor: context.getColor("black").withOpacity(0.35),
+              style: Theme.of(context).textTheme.titleLarge,
+              textCapitalization: TextCapitalization.words,
+              onSubmitted: (_) => nextOnBoardPage(),
             ),
           ),
         ],
       ),
       OnBoardPage(
         widgets: [
-          Container(
-            constraints: BoxConstraints(
-                maxWidth: MediaQuery.sizeOf(context).height <=
-                        MediaQuery.sizeOf(context).width
-                    ? MediaQuery.sizeOf(context).height * 0.5
-                    : 300),
-            child: imageLanding3,
-          ),
-          SizedBox(height: 15),
-          Padding(
-            padding: const EdgeInsetsDirectional.symmetric(horizontal: 25),
-            child: TextFont(
-              text: "onboarding-title-3",
+          SizedBox(height: MediaQuery.of(context).size.height * 0.15),
+          Text(
+            'Choose your gender',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              textAlign: TextAlign.center,
-              fontSize: 25,
-              maxLines: 5,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 8),
+          Text(
+            'Based on the body type we will better calculate your hydration needs',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 32),
+          ...genderOptions.map((option) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 4.0),
+            child: Card(
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(
+                  color: selectedGender == option['value']
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                ),
+              ),
+              child: RadioListTile<String>(
+                value: option['value'],
+                groupValue: selectedGender,
+                onChanged: (value) {
+                  setState(() {
+                    selectedGender = value;
+                  });
+                },
+                title: Text(
+                  option['label'],
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                secondary: Icon(
+                  option['icon'],
+                  color: selectedGender == option['value']
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                activeColor: Theme.of(context).colorScheme.primary,
+                selected: selectedGender == option['value'],
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          )).toList(),
+        ],
+      ),
+      OnBoardPage(
+        widgets: [
+          SizedBox(height: MediaQuery.of(context).size.height * 0.15),
+          Text(
+            'What is your weight?',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 8),
+          Text(
+            'Weight has a big impact on calculating your daily water goal',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 48),
+          // 单位选择
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ChoiceChip(
+                label: Text('kg'),
+                selected: weightUnit == 'kg',
+                onSelected: (_) {
+                  if (weightUnit != 'kg') toggleWeightUnit();
+                },
+                selectedColor: Theme.of(context).colorScheme.primaryContainer,
+                labelStyle: TextStyle(
+                  color: weightUnit == 'kg'
+                      ? Theme.of(context).colorScheme.onPrimaryContainer
+                      : Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+              SizedBox(width: 16),
+              ChoiceChip(
+                label: Text('lbs'),
+                selected: weightUnit == 'lbs',
+                onSelected: (_) {
+                  if (weightUnit != 'lbs') toggleWeightUnit();
+                },
+                selectedColor: Theme.of(context).colorScheme.primaryContainer,
+                labelStyle: TextStyle(
+                  color: weightUnit == 'lbs'
+                      ? Theme.of(context).colorScheme.onPrimaryContainer
+                      : Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 32),
+          // 体重显示
+          Text(
+            '${getDisplayWeight()} $weightUnit',
+            style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 24),
+          // 滑动选择器
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            child: SliderTheme(
+              data: SliderTheme.of(context).copyWith(
+                activeTrackColor: Theme.of(context).colorScheme.primary,
+                inactiveTrackColor: Theme.of(context).colorScheme.primaryContainer,
+                thumbColor: Theme.of(context).colorScheme.primary,
+                overlayColor: Theme.of(context).colorScheme.primary.withOpacity(0.12),
+                trackHeight: 8.0,
+              ),
+              child: Slider(
+                value: weight,
+                min: weightUnit == 'kg' ? 30.0 : 66.0,  // 最小30kg或66磅
+                max: weightUnit == 'kg' ? 200.0 : 440.0, // 最大200kg或440磅
+                onChanged: (value) {
+                  setState(() {
+                    weight = value;
+                  });
+                },
+              ),
             ),
           ),
-          SizedBox(height: 25),
-          isIOS()
-              ? IntrinsicWidth(
-                  child: Padding(
-                    padding:
-                        const EdgeInsetsDirectional.symmetric(horizontal: 8.0),
-                    child: Button(
-                      label: "lets-go".tr(),
-                      onTap: () {
-                        nextNavigation();
-                      },
-                      expandedLayout: false,
+        ],
+      ),
+      OnBoardPage(
+        widgets: [
+          SizedBox(height: MediaQuery.of(context).size.height * 0.15),
+          Text(
+            'Activity Level',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 8),
+          Text(
+            'When burning calories, your body needs more fluids to stay hydrated.',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 32),
+          ...activityOptions.map((option) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 4.0),
+            child: Card(
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(
+                  color: selectedActivityLevel == option['value']
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  RadioListTile<int>(
+                    value: option['value'],
+                    groupValue: selectedActivityLevel,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedActivityLevel = value;
+                      });
+                    },
+                    title: Text(
+                      option['label'],
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
+                    secondary: Icon(
+                      option['icon'],
+                      color: selectedActivityLevel == option['value']
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                    activeColor: Theme.of(context).colorScheme.primary,
+                    selected: selectedActivityLevel == option['value'],
                   ),
-                )
-              : SizedBox.shrink(),
-          isIOS()
-              ? SizedBox.shrink()
-              : SettingsContainerOutlined(
-                  onTap: () async {
-                    context.go(AppRoute.home.route);
-                    // loadingIndeterminateKey.currentState?.setVisibility(true);
-                    // openLoadingPopupTryCatch(
-                    //   () async {
-                    //     // Can maybe use this function, but on web first login does not sync...
-                    //     // Let's just use the functionality below this
-                    //     // await signInAndSync(context, next: () {});
-
-                    //     // await signInGoogle(
-                    //     //   context: context,
-                    //     //   waitForCompletion: false,
-                    //     //   next: () {},
-                    //     // );
-                    //     // if (appStateSettings["username"] == "" &&
-                    //     //     googleUser != null) {
-                    //     //   updateSettings(
-                    //     //       "username", googleUser?.displayName ?? "",
-                    //     //       pagesNeedingRefresh: [0],
-                    //     //       updateGlobalState: false);
-                    //     // }
-                    //     // If user has sync backups, but no real backups it will show up here
-                    //     // For now disable restoring of a backup popup, the sync backups will be restored automatically using the function call below
-                    //     // var result;
-                    //     // List<drive.File>? files = (await getDriveFiles()).$2;
-                    //     // if ((files?.length ?? 0) > 0) {
-                    //     //   result = await openPopup(
-                    //     //     context,
-                    //     //     icon: appStateSettings["outlinedIcons"] ? Icons.cloud_sync_outlined : Icons.cloud_sync_rounded,
-                    //     //     title: "backup-found".tr(),
-                    //     //     description: "backup-found-description".tr(),
-                    //     //     onSubmit: () {
-                    //     //       popRoute(context, true);
-                    //     //     },
-                    //     //     onCancel: () {
-                    //     //       popRoute(context, false);
-                    //     //     },
-                    //     //     onSubmitLabel: "restore".tr(),
-                    //     //     onCancelLabel: "cancel".tr(),
-                    //     //   );
-                    //     // }
-                    //     // if (result == true) {
-                    //     //   chooseBackup(context, hideDownloadButton: true);
-                    //     // } else if (result == false && googleUser != null) {
-                    //     //   openLoadingPopup(context);
-                    //     //   // set this to true so cloud functions run
-                    //     //   entireAppLoaded = true;
-                    //     //   await runAllCloudFunctions(
-                    //     //     context,
-                    //     //     forceSignIn: true,
-                    //     //   );
-                    //     //   popRoute(context);
-                    //     //   nextNavigation();
-                    //     // }
-                    //     // else {
-                    //     //   nextNavigation();
-                    //     // }
-
-                    //     // set this to true so cloud functions run
-                    //     // entireAppLoaded = true;
-                    //     // await runAllCloudFunctions(
-                    //     //   context,
-                    //     //   forceSignIn: true,
-                    //     // );
-
-                    //     nextNavigation();
-                    //     // loadingIndeterminateKey.currentState
-                    //     //     ?.setVisibility(false);
-                    //   },
-                    //   onError: (e) {
-                    //     print("Error signing in: " + e.toString());
-                    //     // loadingIndeterminateKey.currentState
-                    //     //     ?.setVisibility(false);
-                    //   },
-                    // );
-                  },
-                  title: "sign-in-with-google",
-                  // icon: MoreIcons.google,
-                  isExpanded: false,
+                  if (selectedActivityLevel == option['value'])
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                      child: Text(
+                        option['description'],
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          )).toList(),
+        ],
+      ),
+      OnBoardPage(
+        widgets: [
+          SizedBox(height: MediaQuery.of(context).size.height * 0.15),
+          Text(
+            'Choose your climate',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            child: Text(
+              'Sweating increases water loss. Breathing in cold, dry air requires more water to warm and moist it before reaching the lungs.',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          SizedBox(height: 32),
+          ...climateOptions.map((option) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 4.0),
+            child: Card(
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(
+                  color: selectedClimate == option['value']
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.outline.withOpacity(0.3),
                 ),
-          isIOS() ? SizedBox.shrink() : SizedBox(height: 8),
-          isIOS()
-              ? SizedBox.shrink()
-              : Padding(
-                  padding:
-                      const EdgeInsetsDirectional.symmetric(horizontal: 25),
-                  child: TextFont(
-                    text: "onboarding-info-3".tr(),
-                    textAlign: TextAlign.center,
-                    fontSize: 16,
-                    maxLines: 5,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  RadioListTile<int>(
+                    value: option['value'],
+                    groupValue: selectedClimate,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedClimate = value;
+                      });
+                    },
+                    title: Text(
+                      option['label'],
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    secondary: Icon(
+                      option['icon'],
+                      color: selectedClimate == option['value']
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                    activeColor: Theme.of(context).colorScheme.primary,
+                    selected: selectedClimate == option['value'],
+                  ),
+                  if (selectedClimate == option['value'])
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                      child: Text(
+                        option['description'],
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          )).toList(),
+        ],
+      ),
+      OnBoardPage(
+        widgets: [
+          SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+          Icon(
+            Icons.check_circle_outline_rounded,
+            size: 120,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          SizedBox(height: 32),
+          Text(
+            'Your Daily Goal',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            child: Text(
+              'You can tap the value and setup your own manual daily goal.',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          SizedBox(height: 32),
+          if (!isEditingGoal)
+            GestureDetector(
+              onTap: showGoalEditDialog,
+              child: Text(
+                '${calculatedGoal.round()} $waterUnit',
+                style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            )
+          else
+            Column(
+              children: [
+                Text(
+                  '${calculatedGoal.round()} $waterUnit',
+                  style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
-          isIOS() ? SizedBox.shrink() : SizedBox(height: 35),
-          isIOS()
-              ? SizedBox.shrink()
-              : LowKeyButton(
-                  onTap: () {
-                    nextNavigation();
-                  },
-                  text: "continue-without-sign-in".tr(),
-                ),
-          // IntrinsicWidth(
-          //   child: Button(
-          //     label: "Let's go!",
-          //     onTap: () {
-          //       nextNavigation();
-          //     },
-          //   ),
-          // ),
+              ],
+            ),
         ],
       ),
     ];
 
-    if (numPages != children.length)
-      print("Error: onboarding pages mismatch in length!");
+    if (numPages != children.length) print("Error: onboarding pages mismatch in length!");
 
     return Stack(
       children: [
@@ -591,8 +922,7 @@ class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
         Align(
           alignment: AlignmentDirectional.bottomCenter,
           child: Padding(
-            padding: EdgeInsetsDirectional.only(
-                bottom: MediaQuery.viewPaddingOf(context).bottom),
+            padding: EdgeInsetsDirectional.only(bottom: MediaQuery.viewPaddingOf(context).bottom),
             child: Padding(
               padding: const EdgeInsetsDirectional.symmetric(
                 horizontal: 18,
@@ -605,8 +935,7 @@ class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
                     AnimatedBuilder(
                       animation: controller,
                       builder: (BuildContext context, Widget? child) {
-                        int currentIndex =
-                            controller.page?.round().toInt() ?? 0;
+                        int currentIndex = controller.page?.round().toInt() ?? 0;
                         return AnimatedOpacity(
                           opacity: currentIndex <= 0 ? 0 : 1,
                           duration: Duration(milliseconds: 200),
@@ -615,51 +944,26 @@ class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
                               previousOnBoardPage();
                             },
                             icon: Icons.arrow_back_rounded,
-                            // icon: isIOS()
-                            //     ? appStateSettings["outlinedIcons"]
-                            //         ? Icons.chevron_left_outlined
-                            //         : Icons.chevron_left_rounded
-                            //     : appStateSettings["outlinedIcons"]
-                            //         ? Icons.arrow_back_outlined
-                            //         : Icons.arrow_back_rounded,
                             size: 50,
                             padding: EdgeInsetsDirectional.all(6),
-                            // padding: getIsFullScreen(context) == false
-                            //     ? EdgeInsetsDirectional.all(3)
-                            //     : EdgeInsetsDirectional.all(6),
                           ),
                         );
                       },
                     ),
-                    PageIndicator(
-                        controller: controller, itemCount: children.length),
+                    PageIndicator(controller: controller, itemCount: children.length),
                     AnimatedBuilder(
                       animation: controller,
                       builder: (BuildContext context, Widget? child) {
-                        int currentIndex =
-                            controller.page?.round().toInt() ?? 0;
+                        int currentIndex = controller.page?.round().toInt() ?? 0;
+                        bool isLastPage = currentIndex >= children.length - 1;
                         return AnimatedOpacity(
-                          opacity: isIOS()
-                              ? 1
-                              : currentIndex >= children.length - 1
-                                  ? 0
-                                  : 1,
+                          opacity: 1,
                           duration: Duration(milliseconds: 200),
                           child: ButtonIcon(
                             onTap: () => nextOnBoardPage(),
-                            icon: Icons.arrow_forward_rounded,
-                            // icon: isIOS()
-                            //     ? appStateSettings["outlinedIcons"]
-                            //         ? Icons.chevron_right_outlined
-                            //         : Icons.chevron_right_rounded
-                            //     : appStateSettings["outlinedIcons"]
-                            //         ? Icons.arrow_forward_outlined
-                            //         : Icons.arrow_forward_rounded,
+                            icon: isLastPage ? Icons.check_rounded : Icons.arrow_forward_rounded,
                             size: 50,
                             padding: EdgeInsetsDirectional.all(6),
-                            // padding: getIsFullScreen(context) == false
-                            //     ? EdgeInsetsDirectional.all(3)
-                            //     : EdgeInsetsDirectional.all(6),
                           ),
                         );
                       },
@@ -676,8 +980,7 @@ class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
 }
 
 class OnBoardPage extends StatelessWidget {
-  const OnBoardPage({Key? key, required this.widgets, this.bottomWidget})
-      : super(key: key);
+  const OnBoardPage({Key? key, required this.widgets, this.bottomWidget}) : super(key: key);
   final List<Widget> widgets;
   final Widget? bottomWidget;
   @override
@@ -706,8 +1009,7 @@ class OnBoardPage extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: EdgeInsetsDirectional.only(
-              bottom: 60 + MediaQuery.paddingOf(context).bottom),
+          padding: EdgeInsetsDirectional.only(bottom: 60 + MediaQuery.paddingOf(context).bottom),
           child: Align(
             alignment: AlignmentDirectional.bottomCenter,
             child: bottomWidget ?? SizedBox.shrink(),

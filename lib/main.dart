@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:water_tracking/app.dart';
-// import 'package:water_tracking/common/data/hive.dart';
+import 'package:water_tracking/database/core.dart';
 import 'package:easy_localization_loader/easy_localization_loader.dart';
 
 import 'package:water_tracking/router/app_pages.dart';
@@ -38,6 +38,10 @@ Future<void> initSystem() async {
   // await findSystemLocale();
   //初始化pref
   await Utils().prefUtil.initPref();
+
+  // 初始化 Isar 数据库
+  final db = IsarDatabase.instance;
+  await db.initializeDatabase();
 
   // await initHive();
 
