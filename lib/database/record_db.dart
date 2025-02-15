@@ -29,8 +29,20 @@ class RecordDB {
 
   Future<int> getTotalWaterIntakeByDate(DateTime date) async {
     final records = await getRecordsByDate(date);
-    var amount =  records.fold(0, (sum, record) => sum + (record.amountML ?? 0));
+    var amount = records.fold(0, (sum, record) => sum + (record.amountML ?? 0));
     return amount;
+  }
+
+  // 获取今天的总饮水量
+  Future<int> getTodayTotalWaterIntake() async {
+    final now = DateTime.now();
+    return getTotalWaterIntakeByDate(now);
+  }
+
+  // 获取今天的所有记录
+  Future<List<Record>> getTodayRecords() async {
+    final now = DateTime.now();
+    return getRecordsByDate(now);
   }
 
   Future<List<Record>> getRecordsByDateRange(
@@ -56,5 +68,33 @@ class RecordDB {
     }
     
     return stats;
+  }
+
+  // 获取某天的饮水统计信息
+  Future<Map<String, dynamic>> getDailyWaterStats(DateTime date) async {
+    final records = await getRecordsByDate(date);
+    if (records.isEmpty) {
+      return {
+        'totalML': 0,
+        'goalML': null,
+        'records': <Record>[],
+      };
+    }
+
+    final totalML = records.fold(0, (sum, record) => sum + (record.amountML ?? 0));
+    // 使用当天最后一条记录的目标值作为当天的目标值
+    final goalML = records.last.dailyGoalML;
+
+    return {
+      'totalML': totalML,
+      'goalML': goalML,
+      'records': records,
+    };
+  }
+
+  // 获取今天的饮水统计信息
+  Future<Map<String, dynamic>> getTodayWaterStats() async {
+    final now = DateTime.now();
+    return getDailyWaterStats(now);
   }
 } 

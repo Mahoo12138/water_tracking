@@ -43,7 +43,7 @@ class IsarDatabase {
           ..hydration = 0.6,
         Beverage()
           ..name = "Milk"
-          ..color = "#FFFFFF"
+          ..color = "#888888"
           ..icon = "milk"
           ..hydration = 0.95,
       ];
