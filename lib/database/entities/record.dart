@@ -11,4 +11,7 @@ class Record extends Entity {
   String? beverageColor;
   String? beverageIcon;
   double? beverageHydration;
+
+  // 记录创建时的每日目标值
+  int? dailyGoalML;
 }

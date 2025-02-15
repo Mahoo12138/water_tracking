@@ -47,8 +47,13 @@ const RecordSchema = CollectionSchema(
       name: r'createAt',
       type: IsarType.dateTime,
     ),
-    r'updateAt': PropertySchema(
+    r'dailyGoalML': PropertySchema(
       id: 6,
+      name: r'dailyGoalML',
+      type: IsarType.long,
+    ),
+    r'updateAt': PropertySchema(
+      id: 7,
       name: r'updateAt',
       type: IsarType.dateTime,
     )
@@ -106,7 +111,8 @@ void _recordSerialize(
   writer.writeString(offsets[3], object.beverageIcon);
   writer.writeString(offsets[4], object.beverageName);
   writer.writeDateTime(offsets[5], object.createAt);
-  writer.writeDateTime(offsets[6], object.updateAt);
+  writer.writeLong(offsets[6], object.dailyGoalML);
+  writer.writeDateTime(offsets[7], object.updateAt);
 }
 
 Record _recordDeserialize(
@@ -122,8 +128,9 @@ Record _recordDeserialize(
   object.beverageIcon = reader.readStringOrNull(offsets[3]);
   object.beverageName = reader.readStringOrNull(offsets[4]);
   object.createAt = reader.readDateTimeOrNull(offsets[5]);
+  object.dailyGoalML = reader.readLongOrNull(offsets[6]);
   object.id = id;
-  object.updateAt = reader.readDateTimeOrNull(offsets[6]);
+  object.updateAt = reader.readDateTimeOrNull(offsets[7]);
   return object;
 }
 
@@ -147,6 +154,8 @@ P _recordDeserializeProp<P>(
     case 5:
       return (reader.readDateTimeOrNull(offset)) as P;
     case 6:
+      return (reader.readLongOrNull(offset)) as P;
+    case 7:
       return (reader.readDateTimeOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -899,6 +908,75 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Record, Record, QAfterFilterCondition> dailyGoalMLIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'dailyGoalML',
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> dailyGoalMLIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'dailyGoalML',
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> dailyGoalMLEqualTo(
+      int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'dailyGoalML',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> dailyGoalMLGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'dailyGoalML',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> dailyGoalMLLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'dailyGoalML',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterFilterCondition> dailyGoalMLBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'dailyGoalML',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Record, Record, QAfterFilterCondition> idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -1098,6 +1176,18 @@ extension RecordQuerySortBy on QueryBuilder<Record, Record, QSortBy> {
     });
   }
 
+  QueryBuilder<Record, Record, QAfterSortBy> sortByDailyGoalML() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dailyGoalML', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> sortByDailyGoalMLDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dailyGoalML', Sort.desc);
+    });
+  }
+
   QueryBuilder<Record, Record, QAfterSortBy> sortByUpdateAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updateAt', Sort.asc);
@@ -1184,6 +1274,18 @@ extension RecordQuerySortThenBy on QueryBuilder<Record, Record, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Record, Record, QAfterSortBy> thenByDailyGoalML() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dailyGoalML', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Record, Record, QAfterSortBy> thenByDailyGoalMLDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dailyGoalML', Sort.desc);
+    });
+  }
+
   QueryBuilder<Record, Record, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -1250,6 +1352,12 @@ extension RecordQueryWhereDistinct on QueryBuilder<Record, Record, QDistinct> {
     });
   }
 
+  QueryBuilder<Record, Record, QDistinct> distinctByDailyGoalML() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'dailyGoalML');
+    });
+  }
+
   QueryBuilder<Record, Record, QDistinct> distinctByUpdateAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'updateAt');
@@ -1297,6 +1405,12 @@ extension RecordQueryProperty on QueryBuilder<Record, Record, QQueryProperty> {
   QueryBuilder<Record, DateTime?, QQueryOperations> createAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'createAt');
+    });
+  }
+
+  QueryBuilder<Record, int?, QQueryOperations> dailyGoalMLProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'dailyGoalML');
     });
   }
 
