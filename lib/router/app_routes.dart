@@ -8,6 +8,7 @@ import 'package:water_tracking/pages/onboarding/view.dart';
 import 'package:water_tracking/pages/start/view.dart';
 
 import 'package:water_tracking/router/fade_extension.dart';
+import 'package:water_tracking/database/setting_db.dart';
 
 enum AppRoute {
   firstScreen,
@@ -29,6 +30,19 @@ class AppRouter extends Notifier<GoRouter> {
   GoRouter build() {
     return GoRouter(
       initialLocation: AppRoute.firstScreen.route,
+      redirect: (context, state) async {
+        // 检查应用是否已初始化
+        final settingDB = SettingDB();
+        final isInitialized = await settingDB.isAppInitialized();
+
+        // 如果已初始化，且当前路径是首屏或引导页，则重定向到主页
+        if (isInitialized && 
+            (state.fullPath == AppRoute.firstScreen.route || 
+             state.fullPath == AppRoute.onboarding.route)) {
+          return AppRoute.home.route;
+        }
+        return null;
+      },
       routes: <GoRoute>[
         GoRoute(
           path: AppRoute.firstScreen.route,

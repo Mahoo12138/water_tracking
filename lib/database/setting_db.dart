@@ -62,4 +62,15 @@ class SettingDB {
     }
     return false;
   }
+
+  // 检查应用是否已初始化
+  Future<bool> isAppInitialized() async {
+    final value = await getValue('app_initialized');
+    return value == 'true';
+  }
+
+  // 标记应用已初始化
+  Future<bool> markAppAsInitialized() async {
+    return await setValue('app_initialized', 'true');
+  }
 } 

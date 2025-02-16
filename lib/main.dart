@@ -41,11 +41,8 @@ Future<void> initSystem() async {
 
   // 初始化 Isar 数据库
   final db = IsarDatabase.instance;
-  await db.initializeDatabase();
+  await db.openDB();  // 只打开数据库，不初始化种子数据
 
-  // await initHive();
-
-  // await RustLib.init();
   platFormOption();
 }
 

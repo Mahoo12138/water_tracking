@@ -1,19 +1,13 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:water_tracking/common/widgets/Button.dart';
 import 'package:water_tracking/common/widgets/LinearGradientFadedEdges.dart';
-import 'package:water_tracking/common/widgets/LowKeyButton.dart';
 import 'package:water_tracking/common/widgets/PageIndicator.dart';
-import 'package:water_tracking/common/widgets/SettingsContainerOutlined.dart';
-import 'package:water_tracking/common/widgets/Text.dart';
+import 'package:water_tracking/database/core.dart';
 import 'package:water_tracking/database/setting_db.dart';
-import 'package:water_tracking/foundation/extensions/context_ext.dart';
-// import 'package:budget/database/initializeDefaultDatabase.dart';
 
 import 'package:water_tracking/foundation/extensions/datetime_ext.dart';
-import 'package:water_tracking/router/app_routes.dart';
 import 'package:water_tracking/utils/platform.dart';
 
 class OnBoardingPage extends StatelessWidget {
@@ -72,8 +66,8 @@ class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
   String? selectedGender;
 
   // 添加体重相关状态
-  String weightUnit = 'kg';  // 默认单位为kg
-  double weight = 60.0;      // 默认体重为60kg
+  String weightUnit = 'kg'; // 默认单位为kg
+  double weight = 60.0; // 默认体重为60kg
 
   // 添加活动等级状态
   int? selectedActivityLevel;
@@ -437,9 +431,7 @@ class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
                         },
                         selectedColor: Theme.of(context).colorScheme.primaryContainer,
                         labelStyle: TextStyle(
-                          color: waterUnit == 'ml'
-                              ? Theme.of(context).colorScheme.onPrimaryContainer
-                              : Theme.of(context).colorScheme.onSurface,
+                          color: waterUnit == 'ml' ? Theme.of(context).colorScheme.onPrimaryContainer : Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       SizedBox(width: 16),
@@ -455,9 +447,7 @@ class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
                         },
                         selectedColor: Theme.of(context).colorScheme.primaryContainer,
                         labelStyle: TextStyle(
-                          color: waterUnit == 'oz'
-                              ? Theme.of(context).colorScheme.onPrimaryContainer
-                              : Theme.of(context).colorScheme.onSurface,
+                          color: waterUnit == 'oz' ? Theme.of(context).colorScheme.onPrimaryContainer : Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                     ],
@@ -491,7 +481,14 @@ class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
     // 保存最终的目标水量
     await settingDB.setValue('waterUnit', waterUnit);
     await settingDB.setValue('dailyGoal', calculatedGoal.round().toString());
-    
+
+    // 初始化数据库默认数据
+    final db = IsarDatabase.instance;
+    await db.initializeDatabase();
+
+    // 标记应用已初始化
+    await settingDB.markAppAsInitialized();
+
     // 导航到主页
     if (mounted) {
       context.go('/home');
@@ -512,16 +509,16 @@ class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
           Text(
             'What is your name?',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 8),
           Text(
             'Only used in your profile and notifications',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-            ),
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                ),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: MediaQuery.of(context).size.height * 0.1),
@@ -550,57 +547,55 @@ class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
           Text(
             'Choose your gender',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 8),
           Text(
             'Based on the body type we will better calculate your hydration needs',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-            ),
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                ),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 32),
-          ...genderOptions.map((option) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 4.0),
-            child: Card(
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(
-                  color: selectedGender == option['value']
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.outline.withOpacity(0.3),
-                ),
-              ),
-              child: RadioListTile<String>(
-                value: option['value'],
-                groupValue: selectedGender,
-                onChanged: (value) {
-                  setState(() {
-                    selectedGender = value;
-                  });
-                },
-                title: Text(
-                  option['label'],
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                secondary: Icon(
-                  option['icon'],
-                  color: selectedGender == option['value']
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-                activeColor: Theme.of(context).colorScheme.primary,
-                selected: selectedGender == option['value'],
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-          )).toList(),
+          ...genderOptions
+              .map((option) => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 4.0),
+                    child: Card(
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(
+                          color: selectedGender == option['value'] ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                        ),
+                      ),
+                      child: RadioListTile<String>(
+                        value: option['value'],
+                        groupValue: selectedGender,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedGender = value;
+                          });
+                        },
+                        title: Text(
+                          option['label'],
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        secondary: Icon(
+                          option['icon'],
+                          color: selectedGender == option['value'] ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                        activeColor: Theme.of(context).colorScheme.primary,
+                        selected: selectedGender == option['value'],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ))
+              .toList(),
         ],
       ),
       OnBoardPage(
@@ -609,16 +604,16 @@ class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
           Text(
             'What is your weight?',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 8),
           Text(
             'Weight has a big impact on calculating your daily water goal',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-            ),
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                ),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 48),
@@ -634,9 +629,7 @@ class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
                 },
                 selectedColor: Theme.of(context).colorScheme.primaryContainer,
                 labelStyle: TextStyle(
-                  color: weightUnit == 'kg'
-                      ? Theme.of(context).colorScheme.onPrimaryContainer
-                      : Theme.of(context).colorScheme.onSurface,
+                  color: weightUnit == 'kg' ? Theme.of(context).colorScheme.onPrimaryContainer : Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               SizedBox(width: 16),
@@ -648,9 +641,7 @@ class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
                 },
                 selectedColor: Theme.of(context).colorScheme.primaryContainer,
                 labelStyle: TextStyle(
-                  color: weightUnit == 'lbs'
-                      ? Theme.of(context).colorScheme.onPrimaryContainer
-                      : Theme.of(context).colorScheme.onSurface,
+                  color: weightUnit == 'lbs' ? Theme.of(context).colorScheme.onPrimaryContainer : Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ],
@@ -660,9 +651,9 @@ class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
           Text(
             '${getDisplayWeight()} $weightUnit',
             style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.primary,
-            ),
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 24),
@@ -679,7 +670,7 @@ class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
               ),
               child: Slider(
                 value: weight,
-                min: weightUnit == 'kg' ? 30.0 : 66.0,  // 最小30kg或66磅
+                min: weightUnit == 'kg' ? 30.0 : 66.0, // 最小30kg或66磅
                 max: weightUnit == 'kg' ? 200.0 : 440.0, // 最大200kg或440磅
                 onChanged: (value) {
                   setState(() {
@@ -697,69 +688,67 @@ class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
           Text(
             'Activity Level',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 8),
           Text(
             'When burning calories, your body needs more fluids to stay hydrated.',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-            ),
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                ),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 32),
-          ...activityOptions.map((option) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 4.0),
-            child: Card(
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(
-                  color: selectedActivityLevel == option['value']
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.outline.withOpacity(0.3),
-                ),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  RadioListTile<int>(
-                    value: option['value'],
-                    groupValue: selectedActivityLevel,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedActivityLevel = value;
-                      });
-                    },
-                    title: Text(
-                      option['label'],
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    secondary: Icon(
-                      option['icon'],
-                      color: selectedActivityLevel == option['value']
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                    activeColor: Theme.of(context).colorScheme.primary,
-                    selected: selectedActivityLevel == option['value'],
-                  ),
-                  if (selectedActivityLevel == option['value'])
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                      child: Text(
-                        option['description'],
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ...activityOptions
+              .map((option) => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 4.0),
+                    child: Card(
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(
+                          color: selectedActivityLevel == option['value'] ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline.withOpacity(0.3),
                         ),
                       ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          RadioListTile<int>(
+                            value: option['value'],
+                            groupValue: selectedActivityLevel,
+                            onChanged: (value) {
+                              setState(() {
+                                selectedActivityLevel = value;
+                              });
+                            },
+                            title: Text(
+                              option['label'],
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            secondary: Icon(
+                              option['icon'],
+                              color: selectedActivityLevel == option['value'] ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                            activeColor: Theme.of(context).colorScheme.primary,
+                            selected: selectedActivityLevel == option['value'],
+                          ),
+                          if (selectedActivityLevel == option['value'])
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                              child: Text(
+                                option['description'],
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    ),
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
-                ],
-              ),
-            ),
-          )).toList(),
+                  ))
+              .toList(),
         ],
       ),
       OnBoardPage(
@@ -768,72 +757,69 @@ class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
           Text(
             'Choose your climate',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 8),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32.0),
-            child: Text(
-              'Sweating increases water loss. Breathing in cold, dry air requires more water to warm and moist it before reaching the lungs.',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
+              padding: const EdgeInsets.symmetric(horizontal: 32.0),
+              child: Text(
+                'Sweating increases water loss. Breathing in cold, dry air requires more water to warm and moist it before reaching the lungs.',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                    ),
+                textAlign: TextAlign.center,
+              )),
           SizedBox(height: 32),
-          ...climateOptions.map((option) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 4.0),
-            child: Card(
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(
-                  color: selectedClimate == option['value']
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.outline.withOpacity(0.3),
-                ),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  RadioListTile<int>(
-                    value: option['value'],
-                    groupValue: selectedClimate,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedClimate = value;
-                      });
-                    },
-                    title: Text(
-                      option['label'],
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    secondary: Icon(
-                      option['icon'],
-                      color: selectedClimate == option['value']
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                    activeColor: Theme.of(context).colorScheme.primary,
-                    selected: selectedClimate == option['value'],
-                  ),
-                  if (selectedClimate == option['value'])
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                      child: Text(
-                        option['description'],
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ...climateOptions
+              .map((option) => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 4.0),
+                    child: Card(
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(
+                          color: selectedClimate == option['value'] ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline.withOpacity(0.3),
                         ),
                       ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          RadioListTile<int>(
+                            value: option['value'],
+                            groupValue: selectedClimate,
+                            onChanged: (value) {
+                              setState(() {
+                                selectedClimate = value;
+                              });
+                            },
+                            title: Text(
+                              option['label'],
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            secondary: Icon(
+                              option['icon'],
+                              color: selectedClimate == option['value'] ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                            activeColor: Theme.of(context).colorScheme.primary,
+                            selected: selectedClimate == option['value'],
+                          ),
+                          if (selectedClimate == option['value'])
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                              child: Text(
+                                option['description'],
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    ),
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
-                ],
-              ),
-            ),
-          )).toList(),
+                  ))
+              .toList(),
         ],
       ),
       OnBoardPage(
@@ -848,21 +834,20 @@ class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
           Text(
             'Your Daily Goal',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 8),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32.0),
-            child: Text(
-              'You can tap the value and setup your own manual daily goal.',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
+              padding: const EdgeInsets.symmetric(horizontal: 32.0),
+              child: Text(
+                'You can tap the value and setup your own manual daily goal.',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                    ),
+                textAlign: TextAlign.center,
+              )),
           SizedBox(height: 32),
           if (!isEditingGoal)
             GestureDetector(
@@ -870,9 +855,9 @@ class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
               child: Text(
                 '${calculatedGoal.round()} $waterUnit',
                 style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
               ),
             )
           else
@@ -881,9 +866,9 @@ class OnBoardingPageBodyState extends State<OnBoardingPageBody> {
                 Text(
                   '${calculatedGoal.round()} $waterUnit',
                   style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                 ),
               ],
             ),
