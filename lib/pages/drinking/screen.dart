@@ -546,24 +546,58 @@ class DrinkingPage extends HookWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            builder: (context) => AddWaterBottomSheet(
-              initialDailyGoal: targetWater.value,
-              onAdd: (record) async {
-                await recordDB.save(record);
-                final stats = await recordDB.getTodayWaterStats();
-                currentWater.value = stats['totalML'].toDouble();
-                records.value = (stats['records'] as List<Record>? ?? [])
-                  ..sort((a, b) => b.createAt!.compareTo(a.createAt!));
-              },
-            ),
-          );
+      floatingActionButton: GestureDetector(
+        onDoubleTap: () async {
+          // 获取最近一次记录
+          final lastRecord = records.value.isNotEmpty ? records.value.first : null;
+          if (lastRecord != null) {
+            // 创建新记录，复制最近一次记录的饮品信息
+            final newRecord = Record()
+              ..amountML = lastRecord.amountML
+              ..beverageName = lastRecord.beverageName
+              ..beverageColor = lastRecord.beverageColor
+              ..beverageIcon = lastRecord.beverageIcon
+              ..beverageHydration = lastRecord.beverageHydration
+              ..dailyGoalML = targetWater.value.toInt()
+              ..createAt = DateTime.now();
+
+            // 保存记录并更新状态
+            await recordDB.save(newRecord);
+            final stats = await recordDB.getTodayWaterStats();
+            currentWater.value = stats['totalML'].toDouble();
+            records.value = (stats['records'] as List<Record>? ?? [])
+              ..sort((a, b) => b.createAt!.compareTo(a.createAt!));
+
+            // 显示提示
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Added ${lastRecord.amountML}ml of ${lastRecord.beverageName}'),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            }
+          }
         },
-        child: const Icon(Icons.add),
+        child: FloatingActionButton(
+          onPressed: () {
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              builder: (context) => AddWaterBottomSheet(
+                initialDailyGoal: targetWater.value,
+                onAdd: (record) async {
+                  await recordDB.save(record);
+                  final stats = await recordDB.getTodayWaterStats();
+                  currentWater.value = stats['totalML'].toDouble();
+                  records.value = (stats['records'] as List<Record>? ?? [])
+                    ..sort((a, b) => b.createAt!.compareTo(a.createAt!));
+                },
+              ),
+            );
+          },
+          child: const Icon(Icons.add),
+        ),
       ),
     );
   }
