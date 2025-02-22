@@ -94,5 +94,5 @@
   "mediaTypeImage": "Image",
   "mediaTypeAudio": "Audio",
   "mediaTypeVideo": "Video",
-  "mediaDeleteUseLessFile": "Delete useless file"
+  "language": "Language"
 }
