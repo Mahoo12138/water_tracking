@@ -93,6 +93,36 @@
   "aboutBugReport": "BUG 反馈",
   "mediaTypeImage": "图片",
   "mediaTypeAudio": "音频",
-  "mediaTypeVideo": "视频",
-  "mediaDeleteUseLessFile": "清理无用文件"
+  "theme": {
+    "label": "主题",
+    "light": "亮色",
+    "dark": "暗色",
+    "default": "系统默认",
+    "chooseTheme": "选择主题"
+  },
+  "language": "语言",
+  "beverage": {
+    "settings": "饮品设置",
+    "add": "添加饮品"
+  },
+  "reminder": {
+    "settings": "提醒设置",
+    "add": "添加提醒"
+  },
+  "sync": {
+    "settings": "数据同步",
+    "webdav": {
+      "settings": "WebDAV 设置",
+      "description": "添加 WebDAV 服务器，用于备份数据",
+      "add": "添加 WebDAV"
+    }
+  },
+  "general": {
+    "settings": "通用设置"
+  },
+  "app": {
+    "settings": "应用设置",
+    "report": "报告问题",
+    "about": "关于应用"
+  }
 }
