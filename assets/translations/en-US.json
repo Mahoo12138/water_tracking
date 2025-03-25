@@ -93,6 +93,35 @@
   "aboutBugReport": "BUG Report",
   "mediaTypeImage": "Image",
   "mediaTypeAudio": "Audio",
-  "mediaTypeVideo": "Video",
-  "language": "Language"
+  "theme": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "default": "System Default",
+    "chooseTheme": "Choose Theme"
+  },
+  "language": "Language",
+  "beverage": {
+    "settings": "Bevarage Setting",
+    "add": "Add Bevarage"
+  },
+  "reminder": {
+    "settings": "Reminder Setting",
+    "add": "Add Reminder"
+  },
+  "sync": {
+    "settings": "Data Sync",
+    "webdav": {
+      "settings": "WebDAV Setting",
+      "description": "Add WebDAV server for data backup"
+    }
+  },
+  "general": {
+    "settings": "General"
+  },
+  "app": {
+    "settings": "App Settings",
+    "report": "Report",
+    "about": "About"
+  }
 }
