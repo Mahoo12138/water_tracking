@@ -25,7 +25,7 @@ class AddWaterBottomSheet extends HookWidget {
     final selectedTime = useState<TimeOfDay>(TimeOfDay.now());
     final customAmount = useState<int>(250);
     final beverages = useState<List<Beverage>>([]);
-    final beverageDB = BeverageDB();
+    final beverageDB = BeverageDB.instance;
 
     // 加载饮品列表
     useEffect(() {
@@ -109,14 +109,13 @@ class AddWaterBottomSheet extends HookWidget {
                 if (index < beverages.value.length) {
                   final beverage = beverages.value[index];
                   final isSelected = selectedBeverage.value?.id == beverage.id;
-                  final beverageColor = Color(int.parse(beverage.color?.replaceAll('#', '0xFF') ?? '0xFF2196F3'));
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(16),
                       child: Material(
                         color: isSelected 
-                          ? beverageColor
+                          ? beverage.displayColor
                           : Theme.of(context).colorScheme.surfaceVariant,
                         child: InkWell(
                           onTap: () => selectedBeverage.value = beverage,
@@ -127,10 +126,10 @@ class AddWaterBottomSheet extends HookWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
-                                  _getBeverageIcon(beverage.icon ?? 'water'),
+                                  beverage.displayIcon,
                                   color: isSelected 
                                     ? Colors.white
-                                    : beverageColor,
+                                    : beverage.displayColor,
                                   size: 32,
                                 ),
                                 const SizedBox(height: 4),
