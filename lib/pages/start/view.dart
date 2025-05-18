@@ -4,10 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:water_tracking/database/entities/record.dart';
 
-import 'package:water_tracking/database/beverage_db.dart';
-import 'package:water_tracking/database/record_db.dart';
 import 'package:water_tracking/router/app_routes.dart';
 
 class StartPage extends StatelessWidget {
@@ -18,16 +15,6 @@ class StartPage extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textStyle = Theme.of(context).textTheme;
 
-    Future<void> test() async {
-      final recordDB = RecordDB();
-      final beverageDB = BeverageDB();
-
-      // 添加记录
-      final record = Record()
-        ..amountML = 200
-        ..beverageName = "Water";
-      await recordDB.save(record);
-    }
 
     return Scaffold(
       extendBodyBehindAppBar: true,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:riverpod/riverpod.dart';
+import 'package:water_tracking/pages/beverage/beverage_list_page.dart';
 
 import 'package:water_tracking/pages/home/view.dart';
 import 'package:water_tracking/pages/onboarding/view.dart';
@@ -19,7 +20,8 @@ enum AppRoute {
   forgotPassword,
   profile,
   editProfile,
-  changePassword;
+  changePassword,
+  beverage;
 
   String get route => '/${toString().replaceAll('AppRoute.', '')}';
   String get name => toString().replaceAll('AppRoute.', '');
@@ -36,9 +38,7 @@ class AppRouter extends Notifier<GoRouter> {
         final isInitialized = await settingDB.isAppInitialized();
 
         // 如果已初始化，且当前路径是首屏或引导页，则重定向到主页
-        if (isInitialized && 
-            (state.fullPath == AppRoute.firstScreen.route || 
-             state.fullPath == AppRoute.onboarding.route)) {
+        if (isInitialized && (state.fullPath == AppRoute.firstScreen.route || state.fullPath == AppRoute.onboarding.route)) {
           return AppRoute.home.route;
         }
         return null;
@@ -46,23 +46,23 @@ class AppRouter extends Notifier<GoRouter> {
       routes: <GoRoute>[
         GoRoute(
           path: AppRoute.firstScreen.route,
-          builder: (BuildContext context, GoRouterState state) =>
-              const StartPage(),
+          builder: (BuildContext context, GoRouterState state) => const StartPage(),
         ).fade(),
         GoRoute(
           path: AppRoute.home.route,
-          builder: (BuildContext context, GoRouterState state) =>
-              const HomePage(),
+          builder: (BuildContext context, GoRouterState state) => const HomePage(),
         ).fade(),
         GoRoute(
           path: AppRoute.onboarding.route,
-          builder: (BuildContext context, GoRouterState state) =>
-              const OnBoardingPage(),
+          builder: (BuildContext context, GoRouterState state) => const OnBoardingPage(),
+        ).fade(),
+        GoRoute(
+          path: AppRoute.beverage.route,
+          builder: (BuildContext context, GoRouterState state) => const BeverageListPage(),
         ).fade(),
       ],
     );
   }
 }
 
-final routerConfigProvider =
-    NotifierProvider<AppRouter, GoRouter>(AppRouter.new);
+final routerConfigProvider = NotifierProvider<AppRouter, GoRouter>(AppRouter.new);

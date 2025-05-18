@@ -2,7 +2,10 @@ import 'core.dart';
 import 'entities/beverage.dart';
 import 'package:isar/isar.dart';
 
-class BeverageDB {
+class BeverageDB { 
+  BeverageDB._(); // Private constructor
+  static final BeverageDB instance = BeverageDB._(); // Static instance
+
   final _db = IsarDatabase.instance;
 
   // 基础 CRUD 操作
