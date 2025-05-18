@@ -37,13 +37,28 @@ const BeverageSchema = CollectionSchema(
       name: r'icon',
       type: IsarType.string,
     ),
-    r'name': PropertySchema(
+    r'isActive': PropertySchema(
       id: 4,
+      name: r'isActive',
+      type: IsarType.bool,
+    ),
+    r'isBuiltIn': PropertySchema(
+      id: 5,
+      name: r'isBuiltIn',
+      type: IsarType.bool,
+    ),
+    r'name': PropertySchema(
+      id: 6,
       name: r'name',
       type: IsarType.string,
     ),
+    r'order': PropertySchema(
+      id: 7,
+      name: r'order',
+      type: IsarType.long,
+    ),
     r'updateAt': PropertySchema(
-      id: 5,
+      id: 8,
       name: r'updateAt',
       type: IsarType.dateTime,
     )
@@ -99,8 +114,11 @@ void _beverageSerialize(
   writer.writeDateTime(offsets[1], object.createAt);
   writer.writeDouble(offsets[2], object.hydration);
   writer.writeString(offsets[3], object.icon);
-  writer.writeString(offsets[4], object.name);
-  writer.writeDateTime(offsets[5], object.updateAt);
+  writer.writeBool(offsets[4], object.isActive);
+  writer.writeBool(offsets[5], object.isBuiltIn);
+  writer.writeString(offsets[6], object.name);
+  writer.writeLong(offsets[7], object.order);
+  writer.writeDateTime(offsets[8], object.updateAt);
 }
 
 Beverage _beverageDeserialize(
@@ -115,8 +133,11 @@ Beverage _beverageDeserialize(
   object.hydration = reader.readDoubleOrNull(offsets[2]);
   object.icon = reader.readStringOrNull(offsets[3]);
   object.id = id;
-  object.name = reader.readStringOrNull(offsets[4]);
-  object.updateAt = reader.readDateTimeOrNull(offsets[5]);
+  object.isActive = reader.readBoolOrNull(offsets[4]);
+  object.isBuiltIn = reader.readBoolOrNull(offsets[5]);
+  object.name = reader.readStringOrNull(offsets[6]);
+  object.order = reader.readLongOrNull(offsets[7]);
+  object.updateAt = reader.readDateTimeOrNull(offsets[8]);
   return object;
 }
 
@@ -136,8 +157,14 @@ P _beverageDeserializeProp<P>(
     case 3:
       return (reader.readStringOrNull(offset)) as P;
     case 4:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBoolOrNull(offset)) as P;
     case 5:
+      return (reader.readBoolOrNull(offset)) as P;
+    case 6:
+      return (reader.readStringOrNull(offset)) as P;
+    case 7:
+      return (reader.readLongOrNull(offset)) as P;
+    case 8:
       return (reader.readDateTimeOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -724,6 +751,58 @@ extension BeverageQueryFilter
     });
   }
 
+  QueryBuilder<Beverage, Beverage, QAfterFilterCondition> isActiveIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'isActive',
+      ));
+    });
+  }
+
+  QueryBuilder<Beverage, Beverage, QAfterFilterCondition> isActiveIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'isActive',
+      ));
+    });
+  }
+
+  QueryBuilder<Beverage, Beverage, QAfterFilterCondition> isActiveEqualTo(
+      bool? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isActive',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Beverage, Beverage, QAfterFilterCondition> isBuiltInIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'isBuiltIn',
+      ));
+    });
+  }
+
+  QueryBuilder<Beverage, Beverage, QAfterFilterCondition> isBuiltInIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'isBuiltIn',
+      ));
+    });
+  }
+
+  QueryBuilder<Beverage, Beverage, QAfterFilterCondition> isBuiltInEqualTo(
+      bool? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isBuiltIn',
+        value: value,
+      ));
+    });
+  }
+
   QueryBuilder<Beverage, Beverage, QAfterFilterCondition> nameIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -870,6 +949,75 @@ extension BeverageQueryFilter
     });
   }
 
+  QueryBuilder<Beverage, Beverage, QAfterFilterCondition> orderIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'order',
+      ));
+    });
+  }
+
+  QueryBuilder<Beverage, Beverage, QAfterFilterCondition> orderIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'order',
+      ));
+    });
+  }
+
+  QueryBuilder<Beverage, Beverage, QAfterFilterCondition> orderEqualTo(
+      int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'order',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Beverage, Beverage, QAfterFilterCondition> orderGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'order',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Beverage, Beverage, QAfterFilterCondition> orderLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'order',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Beverage, Beverage, QAfterFilterCondition> orderBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'order',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Beverage, Beverage, QAfterFilterCondition> updateAtIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -995,6 +1143,30 @@ extension BeverageQuerySortBy on QueryBuilder<Beverage, Beverage, QSortBy> {
     });
   }
 
+  QueryBuilder<Beverage, Beverage, QAfterSortBy> sortByIsActive() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isActive', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Beverage, Beverage, QAfterSortBy> sortByIsActiveDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isActive', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Beverage, Beverage, QAfterSortBy> sortByIsBuiltIn() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isBuiltIn', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Beverage, Beverage, QAfterSortBy> sortByIsBuiltInDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isBuiltIn', Sort.desc);
+    });
+  }
+
   QueryBuilder<Beverage, Beverage, QAfterSortBy> sortByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -1004,6 +1176,18 @@ extension BeverageQuerySortBy on QueryBuilder<Beverage, Beverage, QSortBy> {
   QueryBuilder<Beverage, Beverage, QAfterSortBy> sortByNameDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Beverage, Beverage, QAfterSortBy> sortByOrder() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'order', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Beverage, Beverage, QAfterSortBy> sortByOrderDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'order', Sort.desc);
     });
   }
 
@@ -1082,6 +1266,30 @@ extension BeverageQuerySortThenBy
     });
   }
 
+  QueryBuilder<Beverage, Beverage, QAfterSortBy> thenByIsActive() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isActive', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Beverage, Beverage, QAfterSortBy> thenByIsActiveDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isActive', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Beverage, Beverage, QAfterSortBy> thenByIsBuiltIn() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isBuiltIn', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Beverage, Beverage, QAfterSortBy> thenByIsBuiltInDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isBuiltIn', Sort.desc);
+    });
+  }
+
   QueryBuilder<Beverage, Beverage, QAfterSortBy> thenByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -1091,6 +1299,18 @@ extension BeverageQuerySortThenBy
   QueryBuilder<Beverage, Beverage, QAfterSortBy> thenByNameDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Beverage, Beverage, QAfterSortBy> thenByOrder() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'order', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Beverage, Beverage, QAfterSortBy> thenByOrderDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'order', Sort.desc);
     });
   }
 
@@ -1135,10 +1355,28 @@ extension BeverageQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Beverage, Beverage, QDistinct> distinctByIsActive() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isActive');
+    });
+  }
+
+  QueryBuilder<Beverage, Beverage, QDistinct> distinctByIsBuiltIn() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isBuiltIn');
+    });
+  }
+
   QueryBuilder<Beverage, Beverage, QDistinct> distinctByName(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Beverage, Beverage, QDistinct> distinctByOrder() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'order');
     });
   }
 
@@ -1181,9 +1419,27 @@ extension BeverageQueryProperty
     });
   }
 
+  QueryBuilder<Beverage, bool?, QQueryOperations> isActiveProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isActive');
+    });
+  }
+
+  QueryBuilder<Beverage, bool?, QQueryOperations> isBuiltInProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isBuiltIn');
+    });
+  }
+
   QueryBuilder<Beverage, String?, QQueryOperations> nameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'name');
+    });
+  }
+
+  QueryBuilder<Beverage, int?, QQueryOperations> orderProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'order');
     });
   }
 
