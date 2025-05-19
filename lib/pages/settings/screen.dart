@@ -17,13 +17,21 @@ class SettingsPage extends HookWidget {
     // 语言选项
     final languageOptions = [
       {'value': 'system', 'label': 'System Default', 'locale': null},
-      {'value': 'en_US', 'label': 'English', 'locale': const Locale('en', 'US')},
+      {
+        'value': 'en_US',
+        'label': 'English',
+        'locale': const Locale('en', 'US')
+      },
       {'value': 'zh_CN', 'label': '中文', 'locale': const Locale('zh', 'CN')},
     ];
 
     // 主题选项
     final themeOptions = [
-      {'value': 'system', 'label': 'theme.default'.tr(), 'icon': Icons.brightness_auto},
+      {
+        'value': 'system',
+        'label': 'theme.default'.tr(),
+        'icon': Icons.brightness_auto
+      },
       {'value': 'light', 'label': 'theme.light'.tr(), 'icon': Icons.light_mode},
       {'value': 'dark', 'label': 'theme.dark'.tr(), 'icon': Icons.dark_mode},
     ];
@@ -98,7 +106,8 @@ class SettingsPage extends HookWidget {
                                         groupValue: language.value,
                                         onChanged: (value) async {
                                           if (value != null) {
-                                            await applyLanguage(value.toString());
+                                            await applyLanguage(
+                                                value.toString());
                                             Navigator.pop(context);
                                           }
                                         },
@@ -142,11 +151,13 @@ class SettingsPage extends HookWidget {
                                         title: Text(option['label'] as String),
                                         value: option['value'],
                                         groupValue: theme.value,
-                                        secondary: Icon(option['icon'] as IconData),
+                                        secondary:
+                                            Icon(option['icon'] as IconData),
                                         onChanged: (value) async {
                                           if (value != null) {
                                             theme.value = value.toString();
-                                            await settingDB.setValue('theme', value.toString());
+                                            await settingDB.setValue(
+                                                'theme', value.toString());
                                             // TODO: 应用主题设置
                                             Navigator.pop(context);
                                           }
@@ -157,6 +168,19 @@ class SettingsPage extends HookWidget {
                           ),
                         );
                       },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: ListTile(
+                      leading: const Icon(Icons.water_drop_outlined),
+                      title: Text('cup.settings'.tr()),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => context.push('/cup'),
                     ),
                   ),
                 ),
@@ -223,7 +247,8 @@ class SettingsPage extends HookWidget {
                       leading: const Icon(Icons.bug_report_outlined),
                       title: Text('app.report'.tr()),
                       onTap: () async {
-                        final Uri url = Uri.parse('https://github.com/Mahoo12138/water_tracking');
+                        final Uri url = Uri.parse(
+                            'https://github.com/Mahoo12138/water_tracking');
                         if (await canLaunchUrl(url)) {
                           await launchUrl(url);
                         }

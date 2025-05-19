@@ -35,4 +35,23 @@ class Beverage extends Entity {
         return Icons.local_drink;
     }
   }
+
+  // In Beverage class
+  static Color parseColor(String colorString) {
+    if (colorString.isEmpty) return Colors.grey; // Default color
+    final buffer = StringBuffer();
+    if (colorString.length == 6 || colorString.length == 7) buffer.write('ff');
+    buffer.write(colorString.replaceFirst('#', ''));
+    try {
+      return Color(int.parse(buffer.toString(), radix: 16));
+    } catch (e) {
+      return Colors.grey; // Default color on error
+    }
+  }
+
+  static IconData getIconDataFromString(String iconName) {
+    if (iconName == 'water_drop') return Icons.water_drop;
+    if (iconName == 'local_cafe') return Icons.local_cafe;
+    return Icons.local_drink; // Default icon
+  }
 }

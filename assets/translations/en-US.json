@@ -101,6 +101,10 @@
     "chooseTheme": "Choose Theme"
   },
   "language": "Language",
+  "cup": {
+    "settings": "Cup Setting",
+    "add": "Add Cup"
+  },
   "beverage": {
     "settings": "Bevarage Setting",
     "add": "Add Bevarage"

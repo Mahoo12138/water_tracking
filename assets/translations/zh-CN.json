@@ -101,6 +101,10 @@
     "chooseTheme": "选择主题"
   },
   "language": "语言",
+  "cup": {
+    "settings": "杯子设置",
+    "add": "添加杯子"
+  },
   "beverage": {
     "settings": "饮品设置",
     "add": "添加饮品"
