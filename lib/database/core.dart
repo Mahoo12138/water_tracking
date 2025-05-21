@@ -1,6 +1,5 @@
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:water_tracking/database/entities/cup.dart';
 import 'entities/entity.dart';
 import 'entities/record.dart';
 import 'entities/beverage.dart';
@@ -119,7 +118,6 @@ class IsarDatabase {
           BeverageSchema,
           ReminderSchema,
           SettingSchema,
-          CupSchema,
         ],
         directory: dir.path,
       );

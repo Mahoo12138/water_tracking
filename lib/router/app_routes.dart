@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 
 import 'package:riverpod/riverpod.dart';
 import 'package:water_tracking/pages/beverage/beverage_list_page.dart';
-import 'package:water_tracking/pages/cup/cup_list_page.dart';
 
 import 'package:water_tracking/pages/home/view.dart';
 import 'package:water_tracking/pages/onboarding/view.dart';
@@ -67,11 +66,6 @@ class AppRouter extends Notifier<GoRouter> {
           path: AppRoute.beverage.route,
           builder: (BuildContext context, GoRouterState state) =>
               const BeverageListPage(),
-        ).fade(),
-        GoRoute(
-          path: AppRoute.cup.route,
-          builder: (BuildContext context, GoRouterState state) =>
-              const CupListPage(),
         ).fade(),
       ],
     );
