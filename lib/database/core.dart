@@ -1,5 +1,6 @@
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:water_tracking/database/entities/reminder_message.dart';
 import 'entities/entity.dart';
 import 'entities/record.dart';
 import 'entities/beverage.dart';
@@ -23,7 +24,7 @@ class IsarDatabase {
   Future<void> _initDefaultBeverages() async {
     final beverageDB = await db;
     final count = await beverageDB.beverages.count();
-    
+
     if (count == 0) {
       final defaultBeverages = [
         Beverage()
@@ -58,7 +59,7 @@ class IsarDatabase {
   Future<void> _initDefaultSettings() async {
     final settingDB = await db;
     final count = await settingDB.settings.count();
-    
+
     if (count == 0) {
       final defaultSettings = [
         Setting()
@@ -85,20 +86,8 @@ class IsarDatabase {
   Future<void> _initDefaultReminders() async {
     final reminderDB = await db;
     final count = await reminderDB.reminders.count();
-    
-    if (count == 0) {
-      final defaultReminder = Reminder()
-        ..enabled = true
-        ..type = "interval"
-        ..weeks = [1, 2, 3, 4, 5]  // 周一到周五
-        ..startTime = DateTime(2024, 1, 1, 9, 0)  // 9:00
-        ..endTime = DateTime(2024, 1, 1, 18, 0)   // 18:00
-        ..interval = 120;  // 每2小时提醒一次
 
-      await reminderDB.writeTxn(() async {
-        await reminderDB.reminders.put(defaultReminder);
-      });
-    }
+    if (count == 0) {}
   }
 
   Future<void> initializeDatabase() async {
@@ -118,6 +107,7 @@ class IsarDatabase {
           BeverageSchema,
           ReminderSchema,
           SettingSchema,
+          ReminderMessageSchema,
         ],
         directory: dir.path,
       );
