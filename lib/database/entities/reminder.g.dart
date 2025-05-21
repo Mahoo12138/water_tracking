@@ -27,40 +27,61 @@ const ReminderSchema = CollectionSchema(
       name: r'enabled',
       type: IsarType.bool,
     ),
-    r'endTime': PropertySchema(
+    r'fixedTimeStates': PropertySchema(
       id: 2,
-      name: r'endTime',
-      type: IsarType.dateTime,
+      name: r'fixedTimeStates',
+      type: IsarType.boolList,
     ),
-    r'interval': PropertySchema(
+    r'fixedTimes': PropertySchema(
       id: 3,
-      name: r'interval',
+      name: r'fixedTimes',
+      type: IsarType.dateTimeList,
+    ),
+    r'intervalMinutes': PropertySchema(
+      id: 4,
+      name: r'intervalMinutes',
       type: IsarType.long,
     ),
-    r'startTime': PropertySchema(
-      id: 4,
-      name: r'startTime',
-      type: IsarType.dateTime,
-    ),
-    r'staticTimes': PropertySchema(
+    r'isSelected': PropertySchema(
       id: 5,
-      name: r'staticTimes',
-      type: IsarType.stringList,
+      name: r'isSelected',
+      type: IsarType.bool,
     ),
-    r'type': PropertySchema(
+    r'messageId': PropertySchema(
       id: 6,
-      name: r'type',
+      name: r'messageId',
       type: IsarType.string,
     ),
-    r'updateAt': PropertySchema(
+    r'name': PropertySchema(
       id: 7,
+      name: r'name',
+      type: IsarType.string,
+    ),
+    r'remindWhenGoalAchieved': PropertySchema(
+      id: 8,
+      name: r'remindWhenGoalAchieved',
+      type: IsarType.bool,
+    ),
+    r'snoozeMinutes': PropertySchema(
+      id: 9,
+      name: r'snoozeMinutes',
+      type: IsarType.long,
+    ),
+    r'type': PropertySchema(
+      id: 10,
+      name: r'type',
+      type: IsarType.byte,
+      enumMap: _RemindertypeEnumValueMap,
+    ),
+    r'updateAt': PropertySchema(
+      id: 11,
       name: r'updateAt',
       type: IsarType.dateTime,
     ),
-    r'weeks': PropertySchema(
-      id: 8,
-      name: r'weeks',
-      type: IsarType.longList,
+    r'workdays': PropertySchema(
+      id: 12,
+      name: r'workdays',
+      type: IsarType.boolList,
     )
   },
   estimateSize: _reminderEstimateSize,
@@ -84,27 +105,33 @@ int _reminderEstimateSize(
 ) {
   var bytesCount = offsets.last;
   {
-    final list = object.staticTimes;
-    if (list != null) {
-      bytesCount += 3 + list.length * 3;
-      {
-        for (var i = 0; i < list.length; i++) {
-          final value = list[i];
-          bytesCount += value.length * 3;
-        }
-      }
+    final value = object.fixedTimeStates;
+    if (value != null) {
+      bytesCount += 3 + value.length;
     }
   }
   {
-    final value = object.type;
+    final value = object.fixedTimes;
+    if (value != null) {
+      bytesCount += 3 + value.length * 8;
+    }
+  }
+  {
+    final value = object.messageId;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
   }
   {
-    final value = object.weeks;
+    final value = object.name;
     if (value != null) {
-      bytesCount += 3 + value.length * 8;
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.workdays;
+    if (value != null) {
+      bytesCount += 3 + value.length;
     }
   }
   return bytesCount;
@@ -118,13 +145,17 @@ void _reminderSerialize(
 ) {
   writer.writeDateTime(offsets[0], object.createAt);
   writer.writeBool(offsets[1], object.enabled);
-  writer.writeDateTime(offsets[2], object.endTime);
-  writer.writeLong(offsets[3], object.interval);
-  writer.writeDateTime(offsets[4], object.startTime);
-  writer.writeStringList(offsets[5], object.staticTimes);
-  writer.writeString(offsets[6], object.type);
-  writer.writeDateTime(offsets[7], object.updateAt);
-  writer.writeLongList(offsets[8], object.weeks);
+  writer.writeBoolList(offsets[2], object.fixedTimeStates);
+  writer.writeDateTimeList(offsets[3], object.fixedTimes);
+  writer.writeLong(offsets[4], object.intervalMinutes);
+  writer.writeBool(offsets[5], object.isSelected);
+  writer.writeString(offsets[6], object.messageId);
+  writer.writeString(offsets[7], object.name);
+  writer.writeBool(offsets[8], object.remindWhenGoalAchieved);
+  writer.writeLong(offsets[9], object.snoozeMinutes);
+  writer.writeByte(offsets[10], object.type.index);
+  writer.writeDateTime(offsets[11], object.updateAt);
+  writer.writeBoolList(offsets[12], object.workdays);
 }
 
 Reminder _reminderDeserialize(
@@ -136,14 +167,19 @@ Reminder _reminderDeserialize(
   final object = Reminder();
   object.createAt = reader.readDateTimeOrNull(offsets[0]);
   object.enabled = reader.readBoolOrNull(offsets[1]);
-  object.endTime = reader.readDateTimeOrNull(offsets[2]);
+  object.fixedTimeStates = reader.readBoolList(offsets[2]);
+  object.fixedTimes = reader.readDateTimeList(offsets[3]);
   object.id = id;
-  object.interval = reader.readLongOrNull(offsets[3]);
-  object.startTime = reader.readDateTimeOrNull(offsets[4]);
-  object.staticTimes = reader.readStringList(offsets[5]);
-  object.type = reader.readStringOrNull(offsets[6]);
-  object.updateAt = reader.readDateTimeOrNull(offsets[7]);
-  object.weeks = reader.readLongList(offsets[8]);
+  object.intervalMinutes = reader.readLongOrNull(offsets[4]);
+  object.isSelected = reader.readBoolOrNull(offsets[5]);
+  object.messageId = reader.readStringOrNull(offsets[6]);
+  object.name = reader.readStringOrNull(offsets[7]);
+  object.remindWhenGoalAchieved = reader.readBoolOrNull(offsets[8]);
+  object.snoozeMinutes = reader.readLongOrNull(offsets[9]);
+  object.type = _RemindertypeValueEnumMap[reader.readByteOrNull(offsets[10])] ??
+      ReminderType.fixed;
+  object.updateAt = reader.readDateTimeOrNull(offsets[11]);
+  object.workdays = reader.readBoolList(offsets[12]);
   return object;
 }
 
@@ -159,23 +195,43 @@ P _reminderDeserializeProp<P>(
     case 1:
       return (reader.readBoolOrNull(offset)) as P;
     case 2:
-      return (reader.readDateTimeOrNull(offset)) as P;
+      return (reader.readBoolList(offset)) as P;
     case 3:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readDateTimeList(offset)) as P;
     case 4:
-      return (reader.readDateTimeOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 5:
-      return (reader.readStringList(offset)) as P;
+      return (reader.readBoolOrNull(offset)) as P;
     case 6:
       return (reader.readStringOrNull(offset)) as P;
     case 7:
-      return (reader.readDateTimeOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 8:
-      return (reader.readLongList(offset)) as P;
+      return (reader.readBoolOrNull(offset)) as P;
+    case 9:
+      return (reader.readLongOrNull(offset)) as P;
+    case 10:
+      return (_RemindertypeValueEnumMap[reader.readByteOrNull(offset)] ??
+          ReminderType.fixed) as P;
+    case 11:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 12:
+      return (reader.readBoolList(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
 }
+
+const _RemindertypeEnumValueMap = {
+  'fixed': 0,
+  'interval': 1,
+  'byIntake': 2,
+};
+const _RemindertypeValueEnumMap = {
+  0: ReminderType.fixed,
+  1: ReminderType.interval,
+  2: ReminderType.byIntake,
+};
 
 Id _reminderGetId(Reminder object) {
   return object.id;
@@ -361,72 +417,281 @@ extension ReminderQueryFilter
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> endTimeIsNull() {
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      fixedTimeStatesIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'endTime',
+        property: r'fixedTimeStates',
       ));
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> endTimeIsNotNull() {
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      fixedTimeStatesIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'endTime',
+        property: r'fixedTimeStates',
       ));
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> endTimeEqualTo(
-      DateTime? value) {
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      fixedTimeStatesElementEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'endTime',
+        property: r'fixedTimeStates',
         value: value,
       ));
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> endTimeGreaterThan(
-    DateTime? value, {
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      fixedTimeStatesLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'fixedTimeStates',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      fixedTimeStatesIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'fixedTimeStates',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      fixedTimeStatesIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'fixedTimeStates',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      fixedTimeStatesLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'fixedTimeStates',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      fixedTimeStatesLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'fixedTimeStates',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      fixedTimeStatesLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'fixedTimeStates',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> fixedTimesIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'fixedTimes',
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      fixedTimesIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'fixedTimes',
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      fixedTimesElementEqualTo(DateTime value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'fixedTimes',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      fixedTimesElementGreaterThan(
+    DateTime value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'endTime',
+        property: r'fixedTimes',
         value: value,
       ));
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> endTimeLessThan(
-    DateTime? value, {
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      fixedTimesElementLessThan(
+    DateTime value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'endTime',
+        property: r'fixedTimes',
         value: value,
       ));
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> endTimeBetween(
-    DateTime? lower,
-    DateTime? upper, {
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      fixedTimesElementBetween(
+    DateTime lower,
+    DateTime upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'endTime',
+        property: r'fixedTimes',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
       ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      fixedTimesLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'fixedTimes',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> fixedTimesIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'fixedTimes',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      fixedTimesIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'fixedTimes',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      fixedTimesLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'fixedTimes',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      fixedTimesLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'fixedTimes',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      fixedTimesLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'fixedTimes',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
     });
   }
 
@@ -482,59 +747,64 @@ extension ReminderQueryFilter
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> intervalIsNull() {
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      intervalMinutesIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'interval',
+        property: r'intervalMinutes',
       ));
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> intervalIsNotNull() {
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      intervalMinutesIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'interval',
+        property: r'intervalMinutes',
       ));
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> intervalEqualTo(
-      int? value) {
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      intervalMinutesEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'interval',
+        property: r'intervalMinutes',
         value: value,
       ));
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> intervalGreaterThan(
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      intervalMinutesGreaterThan(
     int? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'interval',
+        property: r'intervalMinutes',
         value: value,
       ));
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> intervalLessThan(
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      intervalMinutesLessThan(
     int? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'interval',
+        property: r'intervalMinutes',
         value: value,
       ));
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> intervalBetween(
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      intervalMinutesBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
@@ -542,7 +812,7 @@ extension ReminderQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'interval',
+        property: r'intervalMinutes',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -551,346 +821,63 @@ extension ReminderQueryFilter
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> startTimeIsNull() {
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> isSelectedIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'startTime',
+        property: r'isSelected',
       ));
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> startTimeIsNotNull() {
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      isSelectedIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'startTime',
+        property: r'isSelected',
       ));
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> startTimeEqualTo(
-      DateTime? value) {
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> isSelectedEqualTo(
+      bool? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'startTime',
+        property: r'isSelected',
         value: value,
       ));
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> startTimeGreaterThan(
-    DateTime? value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'startTime',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> startTimeLessThan(
-    DateTime? value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'startTime',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> startTimeBetween(
-    DateTime? lower,
-    DateTime? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'startTime',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> staticTimesIsNull() {
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> messageIdIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'staticTimes',
+        property: r'messageId',
       ));
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
-      staticTimesIsNotNull() {
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> messageIdIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'staticTimes',
+        property: r'messageId',
       ));
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
-      staticTimesElementEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'staticTimes',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
-      staticTimesElementGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'staticTimes',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
-      staticTimesElementLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'staticTimes',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
-      staticTimesElementBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'staticTimes',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
-      staticTimesElementStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'staticTimes',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
-      staticTimesElementEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'staticTimes',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
-      staticTimesElementContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'staticTimes',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
-      staticTimesElementMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'staticTimes',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
-      staticTimesElementIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'staticTimes',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
-      staticTimesElementIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'staticTimes',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
-      staticTimesLengthEqualTo(int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'staticTimes',
-        length,
-        true,
-        length,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> staticTimesIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'staticTimes',
-        0,
-        true,
-        0,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
-      staticTimesIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'staticTimes',
-        0,
-        false,
-        999999,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
-      staticTimesLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'staticTimes',
-        0,
-        true,
-        length,
-        include,
-      );
-    });
-  }
-
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
-      staticTimesLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'staticTimes',
-        length,
-        include,
-        999999,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
-      staticTimesLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'staticTimes',
-        lower,
-        includeLower,
-        upper,
-        includeUpper,
-      );
-    });
-  }
-
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> typeIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'type',
-      ));
-    });
-  }
-
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> typeIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'type',
-      ));
-    });
-  }
-
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> typeEqualTo(
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> messageIdEqualTo(
     String? value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'type',
+        property: r'messageId',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> typeGreaterThan(
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> messageIdGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -898,14 +885,14 @@ extension ReminderQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'type',
+        property: r'messageId',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> typeLessThan(
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> messageIdLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -913,14 +900,14 @@ extension ReminderQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'type',
+        property: r'messageId',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> typeBetween(
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> messageIdBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -929,7 +916,7 @@ extension ReminderQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'type',
+        property: r'messageId',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -939,70 +926,370 @@ extension ReminderQueryFilter
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> typeStartsWith(
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> messageIdStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'type',
+        property: r'messageId',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> typeEndsWith(
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> messageIdEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'type',
+        property: r'messageId',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> typeContains(
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> messageIdContains(
       String value,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
-        property: r'type',
+        property: r'messageId',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> typeMatches(
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> messageIdMatches(
       String pattern,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
-        property: r'type',
+        property: r'messageId',
         wildcard: pattern,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> typeIsEmpty() {
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> messageIdIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'type',
+        property: r'messageId',
         value: '',
       ));
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> typeIsNotEmpty() {
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      messageIdIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'type',
+        property: r'messageId',
         value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> nameIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'name',
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> nameIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'name',
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> nameEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> nameGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> nameLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> nameBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'name',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> nameStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> nameEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> nameContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> nameMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'name',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> nameIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'name',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> nameIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'name',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      remindWhenGoalAchievedIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'remindWhenGoalAchieved',
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      remindWhenGoalAchievedIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'remindWhenGoalAchieved',
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      remindWhenGoalAchievedEqualTo(bool? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'remindWhenGoalAchieved',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      snoozeMinutesIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'snoozeMinutes',
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      snoozeMinutesIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'snoozeMinutes',
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> snoozeMinutesEqualTo(
+      int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'snoozeMinutes',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      snoozeMinutesGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'snoozeMinutes',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> snoozeMinutesLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'snoozeMinutes',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> snoozeMinutesBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'snoozeMinutes',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> typeEqualTo(
+      ReminderType value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'type',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> typeGreaterThan(
+    ReminderType value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'type',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> typeLessThan(
+    ReminderType value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'type',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> typeBetween(
+    ReminderType lower,
+    ReminderType upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'type',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
       ));
     });
   }
@@ -1076,81 +1363,37 @@ extension ReminderQueryFilter
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> weeksIsNull() {
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> workdaysIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'weeks',
+        property: r'workdays',
       ));
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> weeksIsNotNull() {
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> workdaysIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'weeks',
-      ));
-    });
-  }
-
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> weeksElementEqualTo(
-      int value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'weeks',
-        value: value,
+        property: r'workdays',
       ));
     });
   }
 
   QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
-      weeksElementGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+      workdaysElementEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'weeks',
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'workdays',
         value: value,
       ));
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> weeksElementLessThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'weeks',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> weeksElementBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'weeks',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> weeksLengthEqualTo(
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> workdaysLengthEqualTo(
       int length) {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
-        r'weeks',
+        r'workdays',
         length,
         true,
         length,
@@ -1159,10 +1402,10 @@ extension ReminderQueryFilter
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> weeksIsEmpty() {
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> workdaysIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
-        r'weeks',
+        r'workdays',
         0,
         true,
         0,
@@ -1171,10 +1414,10 @@ extension ReminderQueryFilter
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> weeksIsNotEmpty() {
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> workdaysIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
-        r'weeks',
+        r'workdays',
         0,
         false,
         999999,
@@ -1183,13 +1426,14 @@ extension ReminderQueryFilter
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> weeksLengthLessThan(
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
+      workdaysLengthLessThan(
     int length, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
-        r'weeks',
+        r'workdays',
         0,
         true,
         length,
@@ -1199,13 +1443,13 @@ extension ReminderQueryFilter
   }
 
   QueryBuilder<Reminder, Reminder, QAfterFilterCondition>
-      weeksLengthGreaterThan(
+      workdaysLengthGreaterThan(
     int length, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
-        r'weeks',
+        r'workdays',
         length,
         include,
         999999,
@@ -1214,7 +1458,7 @@ extension ReminderQueryFilter
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> weeksLengthBetween(
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> workdaysLengthBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -1222,7 +1466,7 @@ extension ReminderQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
-        r'weeks',
+        r'workdays',
         lower,
         includeLower,
         upper,
@@ -1263,39 +1507,77 @@ extension ReminderQuerySortBy on QueryBuilder<Reminder, Reminder, QSortBy> {
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterSortBy> sortByEndTime() {
+  QueryBuilder<Reminder, Reminder, QAfterSortBy> sortByIntervalMinutes() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'endTime', Sort.asc);
+      return query.addSortBy(r'intervalMinutes', Sort.asc);
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterSortBy> sortByEndTimeDesc() {
+  QueryBuilder<Reminder, Reminder, QAfterSortBy> sortByIntervalMinutesDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'endTime', Sort.desc);
+      return query.addSortBy(r'intervalMinutes', Sort.desc);
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterSortBy> sortByInterval() {
+  QueryBuilder<Reminder, Reminder, QAfterSortBy> sortByIsSelected() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'interval', Sort.asc);
+      return query.addSortBy(r'isSelected', Sort.asc);
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterSortBy> sortByIntervalDesc() {
+  QueryBuilder<Reminder, Reminder, QAfterSortBy> sortByIsSelectedDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'interval', Sort.desc);
+      return query.addSortBy(r'isSelected', Sort.desc);
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterSortBy> sortByStartTime() {
+  QueryBuilder<Reminder, Reminder, QAfterSortBy> sortByMessageId() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'startTime', Sort.asc);
+      return query.addSortBy(r'messageId', Sort.asc);
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterSortBy> sortByStartTimeDesc() {
+  QueryBuilder<Reminder, Reminder, QAfterSortBy> sortByMessageIdDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'startTime', Sort.desc);
+      return query.addSortBy(r'messageId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterSortBy> sortByName() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterSortBy> sortByNameDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterSortBy>
+      sortByRemindWhenGoalAchieved() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'remindWhenGoalAchieved', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterSortBy>
+      sortByRemindWhenGoalAchievedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'remindWhenGoalAchieved', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterSortBy> sortBySnoozeMinutes() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'snoozeMinutes', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterSortBy> sortBySnoozeMinutesDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'snoozeMinutes', Sort.desc);
     });
   }
 
@@ -1350,18 +1632,6 @@ extension ReminderQuerySortThenBy
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterSortBy> thenByEndTime() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'endTime', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Reminder, Reminder, QAfterSortBy> thenByEndTimeDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'endTime', Sort.desc);
-    });
-  }
-
   QueryBuilder<Reminder, Reminder, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -1374,27 +1644,77 @@ extension ReminderQuerySortThenBy
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterSortBy> thenByInterval() {
+  QueryBuilder<Reminder, Reminder, QAfterSortBy> thenByIntervalMinutes() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'interval', Sort.asc);
+      return query.addSortBy(r'intervalMinutes', Sort.asc);
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterSortBy> thenByIntervalDesc() {
+  QueryBuilder<Reminder, Reminder, QAfterSortBy> thenByIntervalMinutesDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'interval', Sort.desc);
+      return query.addSortBy(r'intervalMinutes', Sort.desc);
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterSortBy> thenByStartTime() {
+  QueryBuilder<Reminder, Reminder, QAfterSortBy> thenByIsSelected() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'startTime', Sort.asc);
+      return query.addSortBy(r'isSelected', Sort.asc);
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QAfterSortBy> thenByStartTimeDesc() {
+  QueryBuilder<Reminder, Reminder, QAfterSortBy> thenByIsSelectedDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'startTime', Sort.desc);
+      return query.addSortBy(r'isSelected', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterSortBy> thenByMessageId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'messageId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterSortBy> thenByMessageIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'messageId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterSortBy> thenByName() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterSortBy> thenByNameDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterSortBy>
+      thenByRemindWhenGoalAchieved() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'remindWhenGoalAchieved', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterSortBy>
+      thenByRemindWhenGoalAchievedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'remindWhenGoalAchieved', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterSortBy> thenBySnoozeMinutes() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'snoozeMinutes', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterSortBy> thenBySnoozeMinutesDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'snoozeMinutes', Sort.desc);
     });
   }
 
@@ -1437,34 +1757,60 @@ extension ReminderQueryWhereDistinct
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QDistinct> distinctByEndTime() {
+  QueryBuilder<Reminder, Reminder, QDistinct> distinctByFixedTimeStates() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'endTime');
+      return query.addDistinctBy(r'fixedTimeStates');
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QDistinct> distinctByInterval() {
+  QueryBuilder<Reminder, Reminder, QDistinct> distinctByFixedTimes() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'interval');
+      return query.addDistinctBy(r'fixedTimes');
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QDistinct> distinctByStartTime() {
+  QueryBuilder<Reminder, Reminder, QDistinct> distinctByIntervalMinutes() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'startTime');
+      return query.addDistinctBy(r'intervalMinutes');
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QDistinct> distinctByStaticTimes() {
+  QueryBuilder<Reminder, Reminder, QDistinct> distinctByIsSelected() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'staticTimes');
+      return query.addDistinctBy(r'isSelected');
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QDistinct> distinctByType(
+  QueryBuilder<Reminder, Reminder, QDistinct> distinctByMessageId(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'type', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'messageId', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QDistinct> distinctByName(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QDistinct>
+      distinctByRemindWhenGoalAchieved() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'remindWhenGoalAchieved');
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QDistinct> distinctBySnoozeMinutes() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'snoozeMinutes');
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QDistinct> distinctByType() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'type');
     });
   }
 
@@ -1474,9 +1820,9 @@ extension ReminderQueryWhereDistinct
     });
   }
 
-  QueryBuilder<Reminder, Reminder, QDistinct> distinctByWeeks() {
+  QueryBuilder<Reminder, Reminder, QDistinct> distinctByWorkdays() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'weeks');
+      return query.addDistinctBy(r'workdays');
     });
   }
 }
@@ -1501,32 +1847,58 @@ extension ReminderQueryProperty
     });
   }
 
-  QueryBuilder<Reminder, DateTime?, QQueryOperations> endTimeProperty() {
+  QueryBuilder<Reminder, List<bool>?, QQueryOperations>
+      fixedTimeStatesProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'endTime');
+      return query.addPropertyName(r'fixedTimeStates');
     });
   }
 
-  QueryBuilder<Reminder, int?, QQueryOperations> intervalProperty() {
+  QueryBuilder<Reminder, List<DateTime>?, QQueryOperations>
+      fixedTimesProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'interval');
+      return query.addPropertyName(r'fixedTimes');
     });
   }
 
-  QueryBuilder<Reminder, DateTime?, QQueryOperations> startTimeProperty() {
+  QueryBuilder<Reminder, int?, QQueryOperations> intervalMinutesProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'startTime');
+      return query.addPropertyName(r'intervalMinutes');
     });
   }
 
-  QueryBuilder<Reminder, List<String>?, QQueryOperations>
-      staticTimesProperty() {
+  QueryBuilder<Reminder, bool?, QQueryOperations> isSelectedProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'staticTimes');
+      return query.addPropertyName(r'isSelected');
     });
   }
 
-  QueryBuilder<Reminder, String?, QQueryOperations> typeProperty() {
+  QueryBuilder<Reminder, String?, QQueryOperations> messageIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'messageId');
+    });
+  }
+
+  QueryBuilder<Reminder, String?, QQueryOperations> nameProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'name');
+    });
+  }
+
+  QueryBuilder<Reminder, bool?, QQueryOperations>
+      remindWhenGoalAchievedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'remindWhenGoalAchieved');
+    });
+  }
+
+  QueryBuilder<Reminder, int?, QQueryOperations> snoozeMinutesProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'snoozeMinutes');
+    });
+  }
+
+  QueryBuilder<Reminder, ReminderType, QQueryOperations> typeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'type');
     });
@@ -1538,9 +1910,9 @@ extension ReminderQueryProperty
     });
   }
 
-  QueryBuilder<Reminder, List<int>?, QQueryOperations> weeksProperty() {
+  QueryBuilder<Reminder, List<bool>?, QQueryOperations> workdaysProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'weeks');
+      return query.addPropertyName(r'workdays');
     });
   }
 }
